@@ -1,0 +1,49 @@
+// Static menu items don't get an underline
+.#{$ant-prefix}-menu-item.static {
+    &, &.#{$ant-prefix}-menu-item-selected, &.#{$ant-prefix}-menu-item-active, &:hover, &:active, &:focus {
+        border-bottom: unset;
+        color: unset;
+        cursor: unset;
+    }
+}
+
+// Class to hide a Collapsed Layout.Sidebar at a given screen size
+.#{$ant-prefix}-layout > .#{$ant-prefix}-layout-sider.#{$ant-prefix}-layout-sider-collapsed {
+    @mixin hide($size) {
+        @media (max-width: $size) {
+            flex: 0 0 0px !important;
+            max-width: 0px !important;
+            min-width: 0px !important;
+            width: 0px !important;
+    
+            & > * {
+                overflow: hidden;
+            }
+        }
+    }
+
+    &.hidden-xs { @include hide($screen-xs-max); }
+    &.hidden-sm { @include hide($screen-sm-max); }
+    &.hidden-md { @include hide($screen-md-max); }
+    &.hidden-lg { @include hide($screen-lg-max); }
+    &.hidden-xl { @include hide($screen-xl-max); }
+}
+
+// Form Item classes
+.#{$ant-prefix}-form-item {
+    // Class to reduce margin bottom of form inputs
+    &.margin-bottom-sm {
+        margin-bottom: 10px;
+    }
+
+    // Class to indent label
+    &.indent-label > .#{$ant-prefix}-form-item-label {
+        padding-left: 8px;
+    }
+}
+
+.#{$ant-prefix}-row-flex > div {
+    &.auto {
+        flex-grow: 1;
+    }
+}

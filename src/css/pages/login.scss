@@ -1,0 +1,13 @@
+.page-login {
+    .image-container {
+        background-image: url("../images/headphones-bg.jpg");
+        background-position: 65% center;
+        flex-grow: 1;
+        height: 100vh;
+    }
+
+    .login-container {
+        flex-shrink: 0;
+        width: $screen-xs-max;
+    }
+}

@@ -1,0 +1,39 @@
+<svg width="99" height="66" viewBox="0 0 99 66" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<title>Logo</title>
+<desc>Created using Figma</desc>
+<g id="Canvas" transform="translate(1092 379)">
+<rect x="-1092" y="-379" width="99" height="66" fill="#E5E5E5"/>
+<clipPath id="clip-0" clip-rule="evenodd">
+<path d="M -2218 -512L -778 -512L -778 512L -2218 512L -2218 -512Z" fill="#FFFFFF"/>
+</clipPath>
+<g id="Login Page" clip-path="url(#clip-0)">
+<path d="M -2218 -512L -778 -512L -778 512L -2218 512L -2218 -512Z" fill="#FFFFFF"/>
+<g id="Header">
+<g id="Logo">
+<g id="Ellipse">
+<use xlink:href="#path0_fill" transform="translate(-1092 -379)" fill="#4AA314"/>
+<mask id="mask0_outline_ins">
+<use xlink:href="#path0_fill" fill="white" transform="translate(-1092 -379)"/>
+</mask>
+<g mask="url(#mask0_outline_ins)">
+<use xlink:href="#path1_stroke_2x" transform="translate(-1092 -379)" fill="#FFFFFF"/>
+</g>
+</g>
+<g id="Ellipse">
+<use xlink:href="#path0_fill" transform="translate(-1058.87 -379)" fill="#0F9AD6"/>
+<mask id="mask1_outline_ins">
+<use xlink:href="#path0_fill" fill="white" transform="translate(-1058.87 -379)"/>
+</mask>
+<g mask="url(#mask1_outline_ins)">
+<use xlink:href="#path1_stroke_2x" transform="translate(-1058.87 -379)" fill="#FFFFFF"/>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+<defs>
+<path id="path0_fill" d="M 65.8653 33C 65.8653 51.2254 51.1209 66 32.9327 66C 14.7445 66 0 51.2254 0 33C 0 14.7746 14.7445 0 32.9327 0C 51.1209 0 65.8653 14.7746 65.8653 33Z"/>
+<path id="path1_stroke_2x" d="M 61.8653 33C 61.8653 49.024 48.904 62 32.9327 62L 32.9327 70C 53.3377 70 69.8653 53.4268 69.8653 33L 61.8653 33ZM 32.9327 62C 16.9613 62 4 49.024 4 33L -4 33C -4 53.4268 12.5276 70 32.9327 70L 32.9327 62ZM 4 33C 4 16.976 16.9613 4 32.9327 4L 32.9327 -4C 12.5276 -4 -4 12.5732 -4 33L 4 33ZM 32.9327 4C 48.904 4 61.8653 16.976 61.8653 33L 69.8653 33C 69.8653 12.5732 53.3377 -4 32.9327 -4L 32.9327 4Z"/>
+</defs>
+</svg>
