@@ -42,7 +42,7 @@ class Library extends React.Component {
                 </Row>
                 <Row>
                     <Col>
-                        <MusicTable data={this.state.songs} addSongToPlaylist={this.props.addSongToPlaylist} playlists={this.props.playlists} />
+                        <MusicTable data={Object.values(this.state.songs)} addSongToPlaylist={this.props.addSongToPlaylist} playlists={this.props.playlists} />
                     </Col>
                 </Row>
             </div>
@@ -52,7 +52,7 @@ class Library extends React.Component {
 
 const mapStoreToProps = (store) => {
     return {
-        songs: store.library.songs,
+        songs: store.library,
         playlists: store.playlists
     }
 }

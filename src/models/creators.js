@@ -22,7 +22,7 @@ export const createPlaylist = (playlist = {}) => {
         id: playlist._id || playlist.id,
         name: playlist.name,
         owner: playlist.owner,
-        songs: (playlist.songs || []).map(song => createSong(song)),
+        songs: (playlist.songs || []).map(song => (song._id || song.id)),
         type: playlist.type
     }
 }

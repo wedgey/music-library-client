@@ -13,13 +13,17 @@ class Playlist extends React.Component {
     }
 
     componentDidMount() {
-        let playlist = this.props.playlists[this.props.match.params.id] || {};
-        if (this.props.match.params.id) this.setState({playlist});
+        let playlist = {...(this.props.playlists[this.props.match.params.id] || {})};
+        if (this.props.match.params.id) {
+            if (playlist.songs && playlist.songs.length > 0) playlist.songs = playlist.songs.map(songId => this.props.songs[songId]);
+            this.setState({playlist});
+        }
     }
 
     componentWillReceiveProps(nextProps) {
         if (this.state.playlist.id !== nextProps.match.params.id) {
-            let playlist = nextProps.playlists[nextProps.match.params.id] || {};
+            let playlist = {...(nextProps.playlists[nextProps.match.params.id] || {})};
+            if (playlist.songs && playlist.songs.length > 0) playlist.songs = playlist.songs.map(songId => this.props.songs[songId]);
             this.setState({playlist});
         }
     }
@@ -36,6 +40,7 @@ class Playlist extends React.Component {
 
 const mapStoreToProps = (store) => {
     return {
+        songs: store.library,
         playlists: store.playlists,
         globalPlayer: store.globalPlayer
     }

@@ -1,8 +1,10 @@
 import React from "react";
 import { Button, Table } from "antd";
+import { connect } from "react-redux";
 
 import Dropdown from "../common/dropdown";
 
+import { formatToMinutes } from "../../utils/common";
 import LocalizationManager from "../../localization";
 import YoutubeManager from "../../utils/youtubeManager";
 import NotificationManager from "../../utils/notificationManager";
@@ -53,12 +55,13 @@ class PlaylistTable extends React.Component {
         },{
             title: this.stringObj.modelsText.music.duration,
             dataIndex: 'duration',
-            sorter: (a, b) => a.duration - b.duration
+            render: (text, row, index) => text ? formatToMinutes(text) : "",
+            sorter: (a, b) => (a.duration || 0) - (b.duration || 0)
         }];
     }
 
     render() {
-        let data = this.props.playlist.songs || [];
+        let data = (this.props.playlist.songs || []).map(song => (this.props.songs[song] || song));
         let { pageSize } = this.state;
         return (
             <Table className="table-playlist-table" columns={this.state.columns} dataSource={data} rowKey={(record, idx) => idx} onRow={this.rowPropSetup} pagination={data.length > pageSize && { pageSize }} />
@@ -66,4 +69,10 @@ class PlaylistTable extends React.Component {
     }
 }
 
-export default PlaylistTable;
+const mapStoreToProps = (store) => {
+    return {
+        songs: store.library
+    }
+}
+
+export default connect(mapStoreToProps, {})(PlaylistTable);

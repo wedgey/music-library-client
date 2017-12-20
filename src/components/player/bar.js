@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, Col, Divider, Icon, Row, Slider } from "antd";
+import { connect } from "react-redux";
 
 // import PlayerVideo from "./video";
 import youtubeManager from "../../utils/youtubeManager";

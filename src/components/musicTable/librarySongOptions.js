@@ -2,6 +2,8 @@ import React from "react";
 import { Button, Menu } from "antd";
 
 import Dropdown from "../common/dropdown";
+import YoutubeManager from "../../utils/youtubeManager";
+import NotificationManager from "../../utils/notificationManager";
 
 class LibrarySongOptions extends React.Component {
     constructor(props) {
