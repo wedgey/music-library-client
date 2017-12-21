@@ -2,7 +2,7 @@
 export const formatToMinutes = (seconds) => {
     let m = Math.floor(seconds / 60);
     let s = Math.ceil(seconds % 60);
-    return `${m}:${s < 10 ? '0': ''}${s}`;
+    return `${Number.isNaN(m) ? "-" : m}:${Number.isNaN(s) ? "--" : (s < 10 ? '0': '')+s}`;
 }
 
 export class IdManager {
