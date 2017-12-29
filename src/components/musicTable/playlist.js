@@ -1,23 +1,17 @@
 import React from "react";
 import { Button, Table } from "antd";
 import { connect } from "react-redux";
+import PropTypes from "prop-types";
 
-import Dropdown from "../common/dropdown";
-
-import { formatToMinutes } from "../../utils/common";
+import MusicTable from "./index";
 import LocalizationManager from "../../localization";
 import YoutubeManager from "../../utils/youtubeManager";
-import NotificationManager from "../../utils/notificationManager";
 
-class PlaylistTable extends React.Component {
+class PlaylistMusicTable extends React.Component {
     constructor(props) {
         super(props);
 
         this.stringObj = LocalizationManager.localization;
-        this.state = {
-            columns: this.buildColumns(),
-            pageSize: 10
-        };
 
         this.rowPropSetup = this.rowPropSetup.bind(this);
         this.handleRowClick = this.handleRowClick.bind(this);
@@ -43,28 +37,10 @@ class PlaylistTable extends React.Component {
         }
     }
 
-    buildColumns() {
-        return [{
-            title: this.stringObj.modelsText.music.title,
-            dataIndex: 'title',
-            sorter: (a, b) => a.title.localeCompare(b.title)
-        },{
-            title: this.stringObj.modelsText.music.artist,
-            dataIndex: 'artist.name',
-            sorter: (a, b) => a.artist.name.localeCompare(b.artist.name)
-        },{
-            title: this.stringObj.modelsText.music.duration,
-            dataIndex: 'duration',
-            render: (text, row, index) => text ? formatToMinutes(text) : "",
-            sorter: (a, b) => (a.duration || 0) - (b.duration || 0)
-        }];
-    }
-
     render() {
-        let data = (this.props.playlist.songs || []).map(song => (this.props.songs[song] || song));
-        let { pageSize } = this.state;
+        let dataSource = (this.props.playlist.songs || []).map(song => (this.props.songs[song] || song));
         return (
-            <Table className="table-playlist-table" columns={this.state.columns} dataSource={data} rowKey={(record, idx) => idx} onRow={this.rowPropSetup} pagination={data.length > pageSize && { pageSize }} />
+            <MusicTable className="table-playlist-music-table" dataSource={dataSource} totalCount={dataSource.length} onRow={this.rowPropSetup} />
         )
     }
 }
@@ -75,4 +51,4 @@ const mapStoreToProps = (store) => {
     }
 }
 
-export default connect(mapStoreToProps, {})(PlaylistTable);
+export default connect(mapStoreToProps, {})(PlaylistMusicTable);

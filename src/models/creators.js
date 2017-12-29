@@ -11,7 +11,8 @@ export const createSong = (song = {}) => {
     return {
         id: song._id || song.id,
         title: song.title || "",
-        artist: createArtist(song.artist),
+        artist: song.artist.map(artist => createArtist(artist)),
+        artistNames: song.artist.map(artist => artist.name).join(', '),
         youtubeId: song.youtubeId || "",
         duration: song.metadata && song.metadata.duration
     }

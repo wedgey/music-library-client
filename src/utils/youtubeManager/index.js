@@ -47,10 +47,10 @@ class YoutubeManager {
         let YT = await this.youtubeAPI;
 
         let id = this.idManager.generateId();
-        if (isGlobal) this.setAsGlobalPlayer(id);
         let player = isGlobal ? new GlobalYoutubePlayer(YT, id, element, options) : new YoutubePlayer(YT, id, element, options);
         player.player.addEventListener('onStateChange', this.handleStateChange.bind(this, id));
         this.players[id] = player;
+        if (isGlobal) this.setAsGlobalPlayer(id);
         return id;
     }
 

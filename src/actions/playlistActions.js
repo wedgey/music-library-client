@@ -1,6 +1,6 @@
 import ajaxManager from "../utils/ajaxManager";
 
-import { PLAYLIST_LOAD, PLAYLIST_LOAD_MANY, PLAYLIST_REMOVE, PLAYLIST_ADD_SONG, LIBRARY_LOAD } from "./types";
+import { PLAYLIST_LOAD, PLAYLIST_LOAD_MANY, PLAYLIST_REMOVE, PLAYLIST_ADD_SONG, PLAYLIST_REMOVE_SONG, PLAYLIST_RENAME, LIBRARY_LOAD } from "./types";
 import { SERVER_URL } from "../config/main";
 import { createSong } from "../models/creators";
 
@@ -54,6 +54,31 @@ export function addSongToPlaylist({id, song}) {
         ajaxManager.post(`${SERVER_URL}/playlist/addsong`, { id, songId: song.id })
             .then(response => {
                 dispatch({ type: PLAYLIST_ADD_SONG, payload: {id, song: song.id }});
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
+}
+
+// Remove a song from a playlist
+export function removeSongFromPlaylist({id, song}) {
+    return function(dispatch) {
+        ajaxManager.post(`${SERVER_URL}/playlsit/removesong`, { id, songId: song.id })
+            .then(response => {
+                dispatch({ type: PLAYLIST_REMOVE_SONG, payload: {id, song: song.id }});
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
+}
+
+export function renamePlaylist({id, name}) {
+    return function(dispatch) {
+        ajaxManager.post(`${SERVER_URL}/playlist/rename`, { id, name })
+            .then(response => {
+                dispatch({ type: PLAYLIST_RENAME, payload: {id, name} });
             })
             .catch(error => {
                 console.log(error);

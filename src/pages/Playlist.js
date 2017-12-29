@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 
-import PlaylistTable from "../components/musicTable/playlist";
+import PlaylistMusicTable from "../components/musicTable/playlist";
 
 class Playlist extends React.Component {
     constructor(props) {
@@ -32,7 +32,7 @@ class Playlist extends React.Component {
         return (
             <div className="page-playlist">
                 {this.state.playlist.name}
-                <PlaylistTable playlist={this.state.playlist} currentVideo={this.props.globalPlayer.playlist.id === this.state.playlist.id ? this.props.globalPlayer.currentVideo : null} />
+                <PlaylistMusicTable playlist={this.state.playlist} currentVideo={this.props.globalPlayer.playlist.id === this.state.playlist.id ? this.props.globalPlayer.currentVideo : null} />
             </div>
         )
     }

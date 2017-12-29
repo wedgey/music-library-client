@@ -18,19 +18,9 @@ export function addSong({ title, artist, youtubeId }) {
     }
 }
 
-// Load Library Action
-export function loadLibrary() {
+// Load Songs
+export function loadSongs(songs) {
     return function(dispatch) {
-        ajaxManager.get(`${SERVER_URL}/song/`)
-            .then(response => {
-                let songs = response.data.data.reduce((obj, song) => {
-                    obj[song._id] = createSong(song);
-                    return obj;
-                }, {});
-                dispatch({ type: LIBRARY_LOAD, payload: songs });
-            })
-            .catch(error => {
-                console.log(error.response);
-            });
+        dispatch({ type: LIBRARY_LOAD, payload: songs });
     }
 }

@@ -137,16 +137,17 @@ class PlayerBar extends React.Component {
 
     render() {
         let repeatIcon = this.state.playerOptions.repeatStatus === YTPlayerRepeat.repeatOne ? 'reload' : this.state.playerOptions.repeatStatus === YTPlayerRepeat.repeatPlaylist ? 'retweet' : 'swap-right';
-        let { artist, title } = this.state.currentSong || {};
+        let { artistNames, title } = this.state.currentSong || {};
         return (
             <div className="cmpt-player-bar">
                 <Row type="flex" align="middle" style={{height: '100%'}} gutter={12}>
-                    <Col>
+                    <Col className="ytContainer">
+                        <div className="video-overlay"></div>
                         <div ref={r => { this.youtubePlayerElement = r}}></div>
                     </Col>
                     <Col style={{width: '250px'}}>
                         <span className="truncate" style={{lineHeight: '1em'}}>{title}</span><br />
-                        <span className="truncate" style={{lineHeight: '1em'}}>{(artist || {}).name}</span>
+                        <span className="truncate" style={{lineHeight: '1em'}}>{artistNames}</span>
                     </Col>
                     <Col className="auto">
                         <Slider tipFormatter={this.formatSliderToolTip} step={0.001} max={this.state.playerVideoTime} value={this.state.playerCurrentTime} onChange={this.onSeek} onAfterChange={this.onSeekTo} />

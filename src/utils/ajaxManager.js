@@ -1,29 +1,33 @@
 import axios from "axios";
 
-import cookies from "./cookieManager";
+import authenticationManager from "./authenticationManager";
 
 class AjaxManager {
     constructor() {
         this.defaultOptions = { };
     }
 
-    get(url, options = {}) {
-        options = Object.assign(this.defaultOptions, { headers: {"Authorization": cookies.get("token")} }, options);
+    async get(url, options = {}) {
+        if (authenticationManager.requiresTokenRefresh()) await authenticationManager.refreshToken();
+        options = Object.assign(this.defaultOptions, authenticationManager.getAuthorizationHeader(), options);
         return axios.get(url, options);
     }
 
-    post(url, data = {}, options = {}) {
-        options = Object.assign(this.defaultOptions, { headers: {"Authorization": cookies.get("token")} }, options);
+    async post(url, data = {}, options = {}) {
+        if (authenticationManager.requiresTokenRefresh()) await authenticationManager.refreshToken();
+        options = Object.assign(this.defaultOptions, authenticationManager.getAuthorizationHeader(), options);
         return axios.post(url, data, options);
     }
 
-    put(url, data = {}, options = {}) {
-        options = Object.assign(this.defaultOptions, { headers: {"Authorization": cookies.get("token")} }, options);
+    async put(url, data = {}, options = {}) {
+        if (authenticationManager.requiresTokenRefresh()) await authenticationManager.refreshToken();
+        options = Object.assign(this.defaultOptions, authenticationManager.getAuthorizationHeader(), options);
         return axios.put(url, data, options);
     }
 
-    delete(url, options = {}) {
-        options = Object.assign(this.defaultOptions, { headers: {"Authorization": cookies.get("token")} }, options);
+    async delete(url, options = {}) {
+        if (authenticationManager.requiresTokenRefresh()) await authenticationManager.refreshToken();
+        options = Object.assign(this.defaultOptions, authenticationManager.getAuthorizationHeader(), options);
         return axios.delete(url, options);
     }
 }
