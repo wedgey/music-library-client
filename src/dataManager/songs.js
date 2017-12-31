@@ -10,7 +10,7 @@ function buildSongObjFromArray(songs = []) {
 }
 
 // Get Songs Action
-export function getSongs({ title, page, pageSize }) {
+export function getSongs({ title, page, pageSize, sortBy, sortOrder }) {
     return new Promise((resolve, reject) => {
         ajaxManager.get(`${SERVER_URL}/song`, { params: { title, page, pageSize }})
                     .then(response => resolve({songs: buildSongObjFromArray(response.data.data), totalCount: response.data.totalCount }))
