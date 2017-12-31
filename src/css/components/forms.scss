@@ -1,0 +1,13 @@
+.form-cmpt-tag-input {
+    display: flex;
+    flex-wrap: wrap;
+
+    .tag {
+        display: inline-block;
+    }
+
+    .input {
+        display: inline-block;
+        flex-grow: 1;
+    }
+}

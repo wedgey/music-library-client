@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 
-import PlaylistTable from "../components/musicTable/playlist";
+import PlaylistMusicTable from "../components/musicTable/playlist";
 
 class Playlist extends React.Component {
     constructor(props) {
@@ -13,13 +13,17 @@ class Playlist extends React.Component {
     }
 
     componentDidMount() {
-        let playlist = this.props.playlists[this.props.match.params.id] || {};
-        if (this.props.match.params.id) this.setState({playlist});
+        let playlist = {...(this.props.playlists[this.props.match.params.id] || {})};
+        if (this.props.match.params.id) {
+            if (playlist.songs && playlist.songs.length > 0) playlist.songs = playlist.songs.map(songId => this.props.songs[songId]);
+            this.setState({playlist});
+        }
     }
 
     componentWillReceiveProps(nextProps) {
         if (this.state.playlist.id !== nextProps.match.params.id) {
-            let playlist = nextProps.playlists[nextProps.match.params.id] || {};
+            let playlist = {...(nextProps.playlists[nextProps.match.params.id] || {})};
+            if (playlist.songs && playlist.songs.length > 0) playlist.songs = playlist.songs.map(songId => this.props.songs[songId]);
             this.setState({playlist});
         }
     }
@@ -28,7 +32,7 @@ class Playlist extends React.Component {
         return (
             <div className="page-playlist">
                 {this.state.playlist.name}
-                <PlaylistTable playlist={this.state.playlist} currentVideo={this.props.globalPlayer.playlist.id === this.state.playlist.id ? this.props.globalPlayer.currentVideo : null} />
+                <PlaylistMusicTable playlist={this.state.playlist} currentVideo={this.props.globalPlayer.playlist.id === this.state.playlist.id ? this.props.globalPlayer.currentVideo : null} />
             </div>
         )
     }
@@ -36,6 +40,7 @@ class Playlist extends React.Component {
 
 const mapStoreToProps = (store) => {
     return {
+        songs: store.library,
         playlists: store.playlists,
         globalPlayer: store.globalPlayer
     }

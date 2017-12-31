@@ -51,7 +51,7 @@ export class YoutubePlayer {
     }
 
     getCurrentSong() {
-        return this.playlist.songs[this.currentVideo];
+        return Store.getState().library[this.playlist.songs[this.currentVideo]];
     }
 
     // Controls
@@ -111,7 +111,7 @@ export class YoutubePlayer {
 
     loadVideoBySong(song) {
         if (!song) return;
-        this.loadVideoById(song.youtubeId);
+        this.loadVideoById(Store.getState().library[song].youtubeId);
     }
 
     loadNewSong(song) {
@@ -129,7 +129,7 @@ export class YoutubePlayer {
 
     loadPlaylistAndPlay(playlist, index = 0) {
         if (!playlist) return;
-        this.playlist = playlist;
+        this.playlist = createPlaylist(playlist);
         this.currentVideo = index;
         this.loadVideoBySong(this.playlist.songs[this.currentVideo]);
     }
@@ -245,7 +245,7 @@ export class GlobalYoutubePlayer extends YoutubePlayer {
 
     onStateChange(e) {
         super.onStateChange(e);
-        Store.dispatch({ type: GLOBAL_PLAYER_CHANGE_CURRENT, payload: this.currentVideo });
+        if (Store.getState().globalPlayer.currentVideo !== this.currentVideo) Store.dispatch({ type: GLOBAL_PLAYER_CHANGE_CURRENT, payload: this.currentVideo });
         Store.dispatch({ type: GLOBAL_PLAYER_UPDATE_STATE, payload: e.data });
     }
 }

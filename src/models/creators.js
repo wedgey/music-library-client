@@ -11,7 +11,8 @@ export const createSong = (song = {}) => {
     return {
         id: song._id || song.id,
         title: song.title || "",
-        artist: createArtist(song.artist),
+        artist: song.artist.map(artist => createArtist(artist)),
+        artistNames: song.artist.map(artist => artist.name).join(', '),
         youtubeId: song.youtubeId || "",
         duration: song.metadata && song.metadata.duration
     }
@@ -22,7 +23,7 @@ export const createPlaylist = (playlist = {}) => {
         id: playlist._id || playlist.id,
         name: playlist.name,
         owner: playlist.owner,
-        songs: (playlist.songs || []).map(song => createSong(song)),
+        songs: (playlist.songs || []).map(song => (song._id || song.id)),
         type: playlist.type
     }
 }

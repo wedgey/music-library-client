@@ -1,9 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Button } from "antd";
 
 import { createPlaylist } from "../actions/playlistActions";
-import PlaylistTable from "../components/musicTable/playlist";
+import PlaylistMusicTable from "../components/musicTable/playlist";
 import YoutubeManager from "../utils/youtubeManager";
 
 class NowPlaying extends React.Component {
@@ -31,7 +30,7 @@ class NowPlaying extends React.Component {
     render() {
         return (
             <div className="page-now-playing">
-                <PlaylistTable playlist={this.state.playlist} currentVideo={this.props.globalPlayer.currentVideo} />
+                <PlaylistMusicTable playlist={this.state.playlist} currentVideo={this.props.globalPlayer.currentVideo} />
             </div>
         )
     }
