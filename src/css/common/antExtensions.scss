@@ -47,3 +47,21 @@
         flex-grow: 1;
     }
 }
+
+// Fixed footer layout extension class
+.#{$ant-prefix}-layout.fixed-footer {
+    $footer-height: 45px;
+
+    // Apply margin bottom to adjust for fixed footer
+    & > .#{$ant-prefix}-layout {
+        margin-bottom: $footer-height;
+    }
+
+    // Apply fixed styles for footer
+    & > .#{$ant-prefix}-layout-footer {
+        bottom: 0px;
+        height: $footer-height;
+        position: fixed;
+        width: 100%;
+    }
+}

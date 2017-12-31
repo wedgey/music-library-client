@@ -14,7 +14,8 @@ class Library extends React.Component {
         this.state = {
             songs: [],
             totalCount: 0,
-            searchTerm: ""
+            searchTerm: "",
+            loading: false
         }
 
         this.handleTableChange = this.handleTableChange.bind(this);
@@ -35,12 +36,13 @@ class Library extends React.Component {
     }
 
     retrieveSongs({id = null, title = null, page = 0, pageSize = 10} = {}) {
+        this.setState({loading: true});
         getSongs({ title, page, pageSize })
             .then(({ songs, totalCount}) => {
                 this.props.loadSongs(songs);
-                this.setState({ songs: Object.values(songs), totalCount });
+                this.setState({ loading: false, songs: Object.values(songs), totalCount });
             })
-            .catch(error => console.log(error));
+            .catch(error => {this.setState({ loading: false}); console.log(error)});
     }
 
     render() {
@@ -53,7 +55,7 @@ class Library extends React.Component {
                 </Row>
                 <Row>
                     <Col>
-                        <LibraryMusicTable dataSource={Object.values(this.state.songs)} totalCount={this.state.totalCount} addSongToPlaylist={this.props.addSongToPlaylist} playlists={this.props.playlists} onChange={this.handleTableChange} />
+                        <LibraryMusicTable dataSource={Object.values(this.state.songs)} loading={{spinning: this.state.loading, delay: 200}} totalCount={this.state.totalCount} addSongToPlaylist={this.props.addSongToPlaylist} playlists={this.props.playlists} onChange={this.handleTableChange} />
                     </Col>
                 </Row>
             </div>

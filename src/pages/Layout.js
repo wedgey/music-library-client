@@ -11,7 +11,7 @@ class BaseLayout extends React.Component {
     }
     render() {
         return (
-            <Layout style={{ minHeight: '100vh'}}>
+            <Layout className="fixed-footer" style={{ minHeight: '100vh'}}>
                 <Layout>
                     <Layout.Sider className="hidden-xs" trigger={null} collapsible collapsed={!this.props.ui.isSideBarOpen}>
                         <SideBar />
