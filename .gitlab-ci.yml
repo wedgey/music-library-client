@@ -34,7 +34,7 @@ deploy_stage:
         - mkdir -p ~/.ssh
         - eval $(ssh-agent -s)
         - '[[ -f /.dockerenv ]] && echo -e "Host *ntStrictHostKeyChecking nonn" > ~/.ssh/config'
-        - ssh-add <(echo "$STAGING_PRIVATE_KEY" | base64 -d)
+        - ssh-add <(echo "$STAGING_PRIVATE_KEY")
     script:
         - ssh -p22 kpoplibrary@desmondpoon.com "rm -rf ~/www/client/dist"
         - scp dist/ kpoplibrary@desmondpoon.com:~/www/client/dist/
