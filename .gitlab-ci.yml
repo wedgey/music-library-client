@@ -37,4 +37,4 @@ deploy_stage:
         - ssh-add <(echo "$STAGING_PRIVATE_KEY")
     script:
         - ssh -p22 kpoplibrary@desmondpoon.com "rm -rf ~/www/client/dist"
-        - scp dist/ kpoplibrary@desmondpoon.com:~/www/client/dist/
+        - scp -r dist/ kpoplibrary@desmondpoon.com:~/www/client/dist/
