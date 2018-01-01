@@ -33,7 +33,7 @@ deploy_stage:
         - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
         - mkdir -p ~/.ssh
         - eval $(ssh-agent -s)
-        - '[[ -f /.dockerenv ]] && echo -e "Host *ntStrictHostKeyChecking nonn" > ~/.ssh/config'
+        - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
         - ssh-add <(echo "$STAGING_PRIVATE_KEY")
     script:
         - ssh -p22 kpoplibrary@desmondpoon.com "rm -rf ~/www/client/dist"
