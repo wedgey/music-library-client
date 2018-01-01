@@ -1,7 +1,8 @@
 import React from "react";
-import { Icon, Input } from "antd";
+import { Input } from "antd";
+import PropTypes from "prop-types";
 
-class CreatePlaylistOption extends React.Component {
+class ClickInput extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -14,6 +15,7 @@ class CreatePlaylistOption extends React.Component {
         this.handleShowInput = this.handleShowInput.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleInputConfirm = this.handleInputConfirm.bind(this);
+        this.handleInputBlur = this.handleInputBlur.bind(this);
     }
 
     handleShowInput(e) {
@@ -25,8 +27,12 @@ class CreatePlaylistOption extends React.Component {
     }
 
     handleInputConfirm(e) {
-        let name = this.state.inputValue;
-        if (name !== "" && this.props.createPlaylist) this.props.createPlaylist({name});
+        let value = this.state.inputValue;
+        if (value !== "" && this.props.confirmHandler) this.props.confirmHandler({value});
+        this.setState({ inputVisible: false, inputValue: "" });
+    }
+
+    handleInputBlur(e) {
         this.setState({ inputVisible: false, inputValue: "" });
     }
 
@@ -39,17 +45,25 @@ class CreatePlaylistOption extends React.Component {
                         type="text"
                         value={this.state.inputValue}
                         onChange={this.handleInputChange}
-                        onBlur={this.handleInputConfirm}
+                        onBlur={this.confirmOnBlur ? this.handleInputConfirm : this.handleInputBlur}
                         onPressEnter={this.handleInputConfirm}
                     />
                 )}
                 {!this.state.inputVisible && (
-                    <a onClick={this.handleShowInput}><Icon type="file-add" /> Create Playlist</a>
+                    <a onClick={this.handleShowInput}>{this.props.children}</a>
                 )}
             </React.Fragment>
         )
     }
-    
 }
 
-export default CreatePlaylistOption;
+ClickInput.propTypes = {
+    confirmHandler: PropTypes.func,
+    confirmOnBlur: PropTypes.bool
+}
+
+ClickInput.defaultProps = {
+    confirmOnBlur: false
+}
+
+export default ClickInput;

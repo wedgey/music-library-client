@@ -4,7 +4,7 @@ import { Dropdown, Icon, Menu, Popconfirm } from "antd";
 import { Link } from "react-router-dom";
 
 import SideBarUserInfo from "./userInfo";
-import CreatePlaylistOption from "./createPlaylistOption";
+import ClickInput from "../common/clickInput";
 
 import LocalizationManager from "../../localization";
 import { getPlaylists, deletePlaylist, createPlaylist } from "../../actions/playlistActions";
@@ -19,6 +19,12 @@ class SideBar extends React.Component {
 
         this.stringObj = LocalizationManager.localization;
         props.getPlaylists();
+
+        this.handleCreatePlaylist = this.handleCreatePlaylist.bind(this);
+    }
+
+    handleCreatePlaylist({value}) {
+        this.props.createPlaylist({name: value});
     }
 
     render() {
@@ -70,7 +76,8 @@ class SideBar extends React.Component {
                     </Menu.ItemGroup>
                     <Menu.ItemGroup key={this.stringObj.componentsText.sideBarText.headers.playlist} title={this.stringObj.componentsText.sideBarText.headers.playlist}>
                         <Menu.Item key="create-playlist">
-                            <CreatePlaylistOption createPlaylist={this.props.createPlaylist} />
+                            {/* <CreatePlaylistOption createPlaylist={this.props.createPlaylist} /> */}
+                            <ClickInput confirmHandler={this.handleCreatePlaylist} confirmOnBlur><Icon type="file-add" /> Create Playlist</ClickInput>
                         </Menu.Item>
                         {playlists}
                     </Menu.ItemGroup>
