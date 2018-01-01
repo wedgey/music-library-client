@@ -1,2 +1,2 @@
-export const SERVER_URL = "http://localhost:3001/api";
+export const SERVER_URL = process.env.NODE_ENV === "production" ? "http://kpoplibrary-api.desmondpoon.com" : "http://localhost:3001/api";
 export const YOUTUBE_IFRAME_URL = "https://www.youtube.com/iframe_api";
