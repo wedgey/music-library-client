@@ -10,7 +10,7 @@ before_script:
 stages:
     - build
     
-build:
+build_prod:
     stage: build
     only: stable/0.1
     script:
