@@ -12,6 +12,8 @@ stages:
     
 build_prod:
     stage: build
-    only: /^stable\/.*/
+    only: 
+        refs: 
+            - /^stable\/.*/
     script:
         - npm run prod
