@@ -30,7 +30,7 @@ class NowPlaying extends React.Component {
     render() {
         return (
             <div className="page-now-playing">
-                <PlaylistMusicTable playlist={this.state.playlist} currentVideo={this.props.globalPlayer.currentVideo} />
+                <PlaylistMusicTable playlist={this.state.playlist} currentVideo={this.props.globalPlayer.currentVideo} showOptions={false} />
             </div>
         )
     }

@@ -64,7 +64,7 @@ export function addSongToPlaylist({id, song}) {
 // Remove a song from a playlist
 export function removeSongFromPlaylist({id, song}) {
     return function(dispatch) {
-        ajaxManager.post(`${SERVER_URL}/playlsit/removesong`, { id, songId: song.id })
+        ajaxManager.post(`${SERVER_URL}/playlist/removesong`, { id, songId: song.id })
             .then(response => {
                 dispatch({ type: PLAYLIST_REMOVE_SONG, payload: {id, song: song.id }});
             })

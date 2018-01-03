@@ -21,7 +21,7 @@ class Playlist extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.state.playlist.id !== nextProps.match.params.id) {
+        if (this.state.playlist.id !== nextProps.match.params.id || this.props.playlists !== nextProps.playlists) {
             let playlist = {...(nextProps.playlists[nextProps.match.params.id] || {})};
             if (playlist.songs && playlist.songs.length > 0) playlist.songs = playlist.songs.map(songId => this.props.songs[songId]);
             this.setState({playlist});
@@ -29,10 +29,11 @@ class Playlist extends React.Component {
     }
 
     render() {
+        let currentVideo = this.props.globalPlayer.playlist.id === this.state.playlist.id ? this.props.globalPlayer.currentVideo : null;
         return (
             <div className="page-playlist">
                 {this.state.playlist.name}
-                <PlaylistMusicTable playlist={this.state.playlist} currentVideo={this.props.globalPlayer.playlist.id === this.state.playlist.id ? this.props.globalPlayer.currentVideo : null} />
+                <PlaylistMusicTable playlist={this.state.playlist} currentVideo={currentVideo} />
             </div>
         )
     }

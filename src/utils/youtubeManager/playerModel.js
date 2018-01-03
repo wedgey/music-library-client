@@ -57,9 +57,18 @@ export class YoutubePlayer {
     // Controls
     playPrevious() {
         if (this.playlist.songs.length === 0 || this.currentVideo === null) return;
-        else if (this.currentVideo > 0 && this.getCurrentTime() <= 5) {
-            this.currentVideo--;
-            return this.loadVideoBySong(this.playlist.songs[this.currentVideo])
+        else if (this.getCurrentTime() <= 5) {
+            if (this.currentVideo > 0) {
+                this.currentVideo--;
+                return this.loadVideoBySong(this.playlist.songs[this.currentVideo]);
+            } else {
+                if (this.playerOptions.repeatStatus === YTPlayerRepeat.repeatPlaylist) {
+                    this.currentVideo = this.playlist.songs.length - 1;
+                    return this.loadVideoBySong(this.playlist.songs[this.currentVideo]);
+                } else {
+                    return this.seekTo(0);
+                }
+            }
         }
         else return this.seekTo(0);
     }
