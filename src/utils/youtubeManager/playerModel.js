@@ -120,7 +120,7 @@ export class YoutubePlayer {
 
     loadVideoBySong(song) {
         if (!song) return;
-        this.loadVideoById(Store.getState().library[song.id].youtubeId);
+        this.loadVideoById(Store.getState().library[song].youtubeId);
     }
 
     loadNewSong(song) {
@@ -132,7 +132,7 @@ export class YoutubePlayer {
 
     loadPlaylist(playlist) {
         if (!playlist) return;
-        this.playlist = playlist;
+        this.playlist = createPlaylist(playlist);
         this.currentVideo = 0;
     }
 
@@ -158,7 +158,7 @@ export class YoutubePlayer {
 
     queueVideoBySong(song) {
         if (!song) return;
-        this.playlist.songs.push(song);
+        this.playlist.songs.push(song.id);
         if (this.currentVideo === null) {
             this.currentVideo = 0;
             this.loadVideoBySong(this.playlist.songs[this.currentVideo]);
