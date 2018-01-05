@@ -8,9 +8,7 @@ import NotificationManager from "../../utils/notificationManager";
 
 class PlaylistSongOptions extends React.Component {
     constructor(props) {
-        super(props);
-
-        
+        super(props);      
     }
 
     removeFromPlaylist(song) {
