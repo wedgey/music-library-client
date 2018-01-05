@@ -3,9 +3,6 @@ image: node:latest
 cache:
     paths:
         - node_modules/
-        
-before_script:
-    - npm install
     
 stages:
     - build
@@ -19,6 +16,8 @@ build_prod:
     artifacts:
         paths:
             - dist/
+    before_script:
+        - npm install
     script:
         - npm run prod
 
