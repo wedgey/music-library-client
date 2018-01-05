@@ -3,12 +3,12 @@
 import { YTPlayerState, YTPlayerRepeat } from "../enums";
 import Store from "../../store";
 import { GLOBAL_PLAYER_LOAD,
-    GLOBAL_PLAYER_REPEAT,
-    GLOBAL_PLAYER_CHANGE_CURRENT,
-    GLOBAL_PLAYER_ADD_TO_PLAYLIST,
-    GLOBAL_PLAYER_REMOVE_FROM_PLAYLIST,
-    GLOBAL_PLAYER_LOAD_PLAYLIST, 
-    GLOBAL_PLAYER_UPDATE_STATE} from "../../actions/types";
+         GLOBAL_PLAYER_REPEAT,
+         GLOBAL_PLAYER_CHANGE_CURRENT,
+         GLOBAL_PLAYER_ADD_TO_PLAYLIST,
+         GLOBAL_PLAYER_REMOVE_FROM_PLAYLIST,
+         GLOBAL_PLAYER_LOAD_PLAYLIST, 
+         GLOBAL_PLAYER_UPDATE_STATE} from "../../actions/types";
 
 import { createPlaylist } from "../../models/creators";
 
@@ -57,9 +57,18 @@ export class YoutubePlayer {
     // Controls
     playPrevious() {
         if (this.playlist.songs.length === 0 || this.currentVideo === null) return;
-        else if (this.currentVideo > 0 && this.getCurrentTime() <= 5) {
-            this.currentVideo--;
-            return this.loadVideoBySong(this.playlist.songs[this.currentVideo])
+        else if (this.getCurrentTime() <= 5) {
+            if (this.currentVideo > 0) {
+                this.currentVideo--;
+                return this.loadVideoBySong(this.playlist.songs[this.currentVideo]);
+            } else {
+                if (this.playerOptions.repeatStatus === YTPlayerRepeat.repeatPlaylist) {
+                    this.currentVideo = this.playlist.songs.length - 1;
+                    return this.loadVideoBySong(this.playlist.songs[this.currentVideo]);
+                } else {
+                    return this.seekTo(0);
+                }
+            }
         }
         else return this.seekTo(0);
     }
@@ -111,7 +120,7 @@ export class YoutubePlayer {
 
     loadVideoBySong(song) {
         if (!song) return;
-        this.loadVideoById(Store.getState().library[song].youtubeId);
+        this.loadVideoById(Store.getState().library[song.id].youtubeId);
     }
 
     loadNewSong(song) {

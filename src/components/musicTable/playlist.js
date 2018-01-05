@@ -6,6 +6,9 @@ import PropTypes from "prop-types";
 import MusicTable from "./index";
 import LocalizationManager from "../../localization";
 import YoutubeManager from "../../utils/youtubeManager";
+import { removeSongFromPlaylist } from "../../actions/playlistActions";
+
+import PlaylistSongOptions from "./playlistSongOptions";
 
 class PlaylistMusicTable extends React.Component {
     constructor(props) {
@@ -39,10 +42,19 @@ class PlaylistMusicTable extends React.Component {
 
     render() {
         let dataSource = (this.props.playlist.songs || []).map(song => (this.props.songs[song] || song));
+        let additionalColumns = this.props.showOptions ? [{ render: (text, record, index) => <PlaylistSongOptions song={record} playlist={this.props.playlist} removeSongFromPlaylist={this.props.removeSongFromPlaylist} />, width: 1}] : [];
         return (
-            <MusicTable className="table-playlist-music-table" dataSource={dataSource} totalCount={dataSource.length} onRow={this.rowPropSetup} />
+            <MusicTable className="table-playlist-music-table" dataSource={dataSource} totalCount={dataSource.length} additionalColumns={additionalColumns} onRow={this.rowPropSetup} />
         )
     }
+}
+
+PlaylistMusicTable.propTypes = {
+    showOptions: PropTypes.bool
+}
+
+PlaylistMusicTable.defaultProps = {
+    showOptions: true
 }
 
 const mapStoreToProps = (store) => {
@@ -51,4 +63,4 @@ const mapStoreToProps = (store) => {
     }
 }
 
-export default connect(mapStoreToProps, {})(PlaylistMusicTable);
+export default connect(mapStoreToProps, { removeSongFromPlaylist })(PlaylistMusicTable);
