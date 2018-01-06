@@ -16,14 +16,30 @@ class PlaylistMusicTable extends React.Component {
 
         this.stringObj = LocalizationManager.localization;
 
+        this.state = {
+            currentPage: 1,
+            pageSize: 10
+        }
+
         this.rowPropSetup = this.rowPropSetup.bind(this);
         this.handleRowClick = this.handleRowClick.bind(this);
         this.playSong = this.playSong.bind(this);
+        this.handlePageChange = this.handlePageChange.bind(this);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (this.props.playlist !== nextProps.playlist) {
+            let currentGlobalPlayer = YoutubeManager.getGlobalPlayer();
+            let currentGlobalPlaylist = currentGlobalPlayer ? currentGlobalPlayer.getCurrentPlaylist() : {};
+            let currentPage = 1;
+            if (currentGlobalPlaylist.id === nextProps.playlist.id && currentGlobalPlayer) currentPage = (Math.floor(currentGlobalPlayer.currentVideo / this.state.pageSize)) + 1;
+            this.setState({ currentPage });
+        }
     }
 
     rowPropSetup(record, index) {
         let props = { index, onClick: this.handleRowClick.bind(undefined, record, index), className: "clickable"};
-        if (index === this.props.currentVideo) props.className += " active";
+        if ((index + ((this.state.currentPage - 1) * this.state.pageSize)) === this.props.currentVideo) props.className += " active";
         return props;
     }
 
@@ -35,16 +51,26 @@ class PlaylistMusicTable extends React.Component {
     playSong(song, index) {
         let globalPlayer = YoutubeManager.getGlobalPlayer();
         if (globalPlayer) {
-            if (globalPlayer.playlist.id === this.props.playlist.id) globalPlayer.playSongAt(index);
-            else globalPlayer.loadPlaylistAndPlay(this.props.playlist, index);
+            let playlistIndex = index + ((this.state.currentPage - 1) * this.state.pageSize)
+            if (globalPlayer.playlist.id === this.props.playlist.id) globalPlayer.playSongAt(playlistIndex);
+            else globalPlayer.loadPlaylistAndPlay(this.props.playlist, playlistIndex);
         }
+    }
+
+    handlePageChange(page) {
+        this.setState({ currentPage: page });
     }
 
     render() {
         let dataSource = (this.props.playlist.songs || []).map(song => (this.props.songs[song] || song));
         let additionalColumns = this.props.showOptions ? [{ render: (text, record, index) => <PlaylistSongOptions song={record} playlist={this.props.playlist} removeSongFromPlaylist={this.props.removeSongFromPlaylist} />, width: 1}] : [];
+
+        let totalCount = dataSource.length;
+        let pageSize = this.state.pageSize;
+        let pagination = totalCount > pageSize && { pageSize, total: totalCount, current: this.state.currentPage, onChange: this.handlePageChange };
+
         return (
-            <MusicTable className="table-playlist-music-table" dataSource={dataSource} totalCount={dataSource.length} additionalColumns={additionalColumns} onRow={this.rowPropSetup} />
+            <MusicTable className="table-playlist-music-table" dataSource={dataSource} totalCount={dataSource.length} additionalColumns={additionalColumns} onRow={this.rowPropSetup} pageSize={pageSize} pagination={pagination} />
         )
     }
 }

@@ -31,10 +31,11 @@ class MusicTable extends React.Component {
     }
 
     render() {
-        let { additionalColumns, dataSource, columns, pageSize, totalCount, ...rest } = this.props;
-        columns = [ ...(columns.length > 0 ? columns : this.defaultColumns), ...additionalColumns ]; 
+        let { additionalColumns, dataSource, columns, pageSize, totalCount, pagination, ...rest } = this.props;
+        columns = [ ...(columns.length > 0 ? columns : this.defaultColumns), ...additionalColumns ];
+        pagination = pagination || (totalCount > pageSize && { pageSize, total: totalCount });
         return (
-            <Table className="table-music-table" {...rest} columns={columns} dataSource={dataSource} rowKey={record => record.id} pagination={totalCount > pageSize && { pageSize, total: totalCount }} />
+            <Table className="table-music-table" {...rest} columns={columns} dataSource={dataSource} rowKey={record => record.id} pagination={pagination} />
         )
     }
 }

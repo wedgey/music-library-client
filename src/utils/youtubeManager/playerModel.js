@@ -54,6 +54,10 @@ export class YoutubePlayer {
         return Store.getState().library[this.playlist.songs[this.currentVideo]];
     }
 
+    getCurrentPlaylist() {
+        return this.playlist;
+    }
+
     // Controls
     playPrevious() {
         if (this.playlist.songs.length === 0 || this.currentVideo === null) return;
@@ -165,6 +169,13 @@ export class YoutubePlayer {
         }
     }
 
+    removeSongFromPlaylist(song, playlistId) {
+        if (!song) return;
+        if (!playlistId || (playlistId && this.playlist.id === playlistId)) {
+            this.playlist.songs = this.playlist.songs.filter(songId => songId !== song.id);
+        }
+    }
+
     destroy() {
         this.player.destroy();
     }
@@ -208,6 +219,10 @@ export class GlobalYoutubePlayer extends YoutubePlayer {
         Store.dispatch({ type: GLOBAL_PLAYER_LOAD, payload: this });
     }
 
+    getCurrentPlaylist() {
+        return Store.getState().globalPlayer.playlist;
+    }
+
     // Add Update Reducer functionality    
     // Controls
     playPrevious() {
@@ -245,6 +260,11 @@ export class GlobalYoutubePlayer extends YoutubePlayer {
         super.queueVideoBySong(song);
         Store.dispatch({ type: GLOBAL_PLAYER_LOAD_PLAYLIST, payload: this.playlist });
         if (Store.getState().globalPlayer.currentVideo !== this.currentVideo) Store.dispatch({ type: GLOBAL_PLAYER_CHANGE_CURRENT, payload: this.currentVideo });
+    }
+
+    removeSongFromPlaylist(song, playlistId) {
+        super.removeSongFromPlaylist(song, playlistId);
+        Store.dispatch({ type: GLOBAL_PLAYER_LOAD_PLAYLIST, payload: this.playlist });
     }
 
     toggleRepeat() {
