@@ -3,6 +3,7 @@ import ajaxManager from "../utils/ajaxManager";
 import { PLAYLIST_LOAD, PLAYLIST_LOAD_MANY, PLAYLIST_REMOVE, PLAYLIST_ADD_SONG, PLAYLIST_REMOVE_SONG, PLAYLIST_RENAME, LIBRARY_LOAD } from "./types";
 import { SERVER_URL } from "../config/main";
 import { createSong } from "../models/creators";
+import youtubeManager from "../utils/youtubeManager";
 
 // Create playlist
 export function createPlaylist({ name, songs }) {
@@ -54,6 +55,8 @@ export function addSongToPlaylist({id, song}) {
         ajaxManager.post(`${SERVER_URL}/playlist/addsong`, { id, songId: song.id })
             .then(response => {
                 dispatch({ type: PLAYLIST_ADD_SONG, payload: {id, song: song.id }});
+                let globalPlayer = youtubeManager.getGlobalPlayer();
+                if (globalPlayer.getCurrentPlaylist().id === id) globalPlayer.queueVideoBySong(song);
             })
             .catch(error => {
                 console.log(error);
@@ -67,6 +70,7 @@ export function removeSongFromPlaylist({id, song}) {
         ajaxManager.post(`${SERVER_URL}/playlist/removesong`, { id, songId: song.id })
             .then(response => {
                 dispatch({ type: PLAYLIST_REMOVE_SONG, payload: {id, song: song.id }});
+                youtubeManager.getGlobalPlayer().removeSongFromPlaylist(song, id);
             })
             .catch(error => {
                 console.log(error);
