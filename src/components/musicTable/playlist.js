@@ -28,8 +28,10 @@ class PlaylistMusicTable extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.playlist !== nextProps.playlist) {
+        console.log(nextProps.playerManager.globalPlayerId);
+        if (this.props.playlist !== nextProps.playlist && nextProps.playerManager.globalPlayerId) {
             let currentGlobalPlayer = YoutubeManager.getGlobalPlayer();
+            console.log(currentGlobalPlayer);
             let currentGlobalPlaylist = currentGlobalPlayer ? currentGlobalPlayer.getCurrentPlaylist() : {};
             let currentPage = 1;
             if (currentGlobalPlaylist.id === nextProps.playlist.id && currentGlobalPlayer) currentPage = (Math.floor(currentGlobalPlayer.currentVideo / this.state.pageSize)) + 1;
@@ -49,10 +51,11 @@ class PlaylistMusicTable extends React.Component {
     }
 
     playSong(song, index) {
-        let globalPlayer = YoutubeManager.getGlobalPlayer();
+        let globalPlayer = YoutubeManager.getPlayer(this.props.playerManager.globalPlayerId);
+        let playlist = globalPlayer.getCurrentPlaylist();
         if (globalPlayer) {
             let playlistIndex = index + ((this.state.currentPage - 1) * this.state.pageSize)
-            if (globalPlayer.playlist.id === this.props.playlist.id) globalPlayer.playSongAt(playlistIndex);
+            if (playlist.id === this.props.playlist.id) globalPlayer.playSongAt(playlistIndex);
             else globalPlayer.loadPlaylistAndPlay(this.props.playlist, playlistIndex);
         }
     }
@@ -85,7 +88,8 @@ PlaylistMusicTable.defaultProps = {
 
 const mapStoreToProps = (store) => {
     return {
-        songs: store.library
+        songs: store.library,
+        playerManager: store.playerManager
     }
 }
 

@@ -29,7 +29,8 @@ class Playlist extends React.Component {
     }
 
     render() {
-        let currentVideo = this.props.globalPlayer.playlist.id === this.state.playlist.id ? this.props.globalPlayer.currentVideo : null;
+        // let currentVideo = this.props.globalPlayer.playlist.id === this.state.playlist.id ? this.props.globalPlayer.currentVideo : null;
+        let currentVideo = null;
         return (
             <div className="page-playlist">
                 {this.state.playlist.name}

@@ -3,7 +3,7 @@ import { notification } from "antd";
 import { YOUTUBE_IFRAME_URL } from "../../config/main";
 import { IdManager } from "../common";
 import { YTPlayerState, YTPlayerRepeat } from "../enums";
-import { PLAYER_LOAD, UI_GLOBAL_PLAYER_LOAD } from "../../actions/types";
+import { PLAYER_MANAGER_LOAD_GLOBAL } from "../../actions/types";
 import Store from "../../store";
 
 
@@ -16,7 +16,6 @@ class YoutubeManager {
         this.youtubeAPI = null;
         this.active = null;
         this.players = {};
-        this.globalPlayerId = null;
         this.loadYoutubeScript();
     }
 
@@ -43,7 +42,7 @@ class YoutubeManager {
     }
 
     setAsGlobalPlayer(id) {
-        this.globalPlayerId = id;
+        Store.dispatch({ type: PLAYER_MANAGER_LOAD_GLOBAL, payload: id });
     }
 
     handleStateChange(id, e) {
@@ -64,14 +63,13 @@ class YoutubeManager {
     }
 
     getGlobalPlayer() {
-        return this.players[this.globalPlayerId];
+        return this.players[Store.getState().playerManager.globalPlayerId];
     }
 
     destroyPlayer(id) {
         if (!this.players[id]) return false;
         this.players[id].destroy();
         delete this.players[id];
-        if (this.globalPlayerId === id) this.globalPlayerId = null;
         return true;
     }
 }

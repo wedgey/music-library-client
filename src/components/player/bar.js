@@ -16,26 +16,18 @@ class PlayerBar extends React.Component {
     }
 
     async componentDidMount() {
-        let ytGlobalPlayer = youtubeManager.getGlobalPlayer();
-        if (!ytGlobalPlayer) {
-            let playerId = await youtubeManager.createYoutubePlayer(this.youtubePlayerElement, {}, true);
-            this.setState({globalPlayer: youtubeManager.getGlobalPlayer()});
-        } else if (ytGlobalPlayer !== this.state.globalPlayer) {
-            this.setState({globalPlayer: ytGlobalPlayer});
-        }
+        if (!this.props.playerManager.globalPlayerId) youtubeManager.createYoutubePlayer(this.youtubePlayerElement, {}, true);
+        // let ytGlobalPlayer = youtubeManager.getPlayerPlayer();
+        // if (!ytGlobalPlayer) await youtubeManager.createYoutubePlayer(this.youtubePlayerElement, {}, true);
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.player != this.props.player) {
-            this.setState({ globalPlayer: youtubeManager.getGlobalPlayer });
+        if (nextProps.playerManager.globalPlayerId !== this.props.playerManager.globalPlayerId) {
+            this.setState({ globalPlayer: youtubeManager.getPlayer(nextProps.playerManager.globalPlayerId) });
         }
     }
 
-    emptyFunc() {}
-
     render() {
-        console.log(youtubeManager.getGlobalPlayer());
-        debugger;
         return (
             <div className="cmpt-player-bar">
                 <Row type="flex" align="middle" style={{height: '100%'}} gutter={12}>
@@ -71,7 +63,8 @@ class PlayerBar extends React.Component {
 
 const mapStoreToProps = (store) => {
     return {
-        player: store.player
+        player: store.player,
+        playerManager: store.playerManager
     }
 }
 

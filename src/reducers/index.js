@@ -6,6 +6,7 @@ import user from "./userReducer";
 import library from "./libraryReducer";
 import globalPlayer from "./globalPlayerReducer";
 import player from "./playerReducer";
+import playerManager from "./playerManagerReducer";
 import playlists from "./playlistReducer";
 
 export default combineReducers({
@@ -14,5 +15,6 @@ export default combineReducers({
     library,
     globalPlayer,
     player,
+    playerManager,
     playlists
 });
