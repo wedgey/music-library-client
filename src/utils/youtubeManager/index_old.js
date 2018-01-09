@@ -3,19 +3,31 @@ import { notification } from "antd";
 import { YOUTUBE_IFRAME_URL } from "../../config/main";
 import { IdManager } from "../common";
 import { YTPlayerState, YTPlayerRepeat } from "../enums";
-import { PLAYER_LOAD, UI_GLOBAL_PLAYER_LOAD } from "../../actions/types";
-import Store from "../../store";
+import { GLOBAL_PLAYER_LOAD, UI_GLOBAL_PLAYER_LOAD } from "../../actions/types";
 
-
-import { YoutubePlayer } from "./playerModel";
+import { GlobalYoutubePlayer, YoutubePlayer } from "./playerModel";
 
 class YoutubeManager {
     constructor(props) {
         this.idManager = new IdManager("YTPlayer");
 
         this.youtubeAPI = null;
-        this.active = null;
         this.players = {};
+        this.active = null;
+        this.defaultPlayerOptions = {
+            height: '100%',
+            width: '100%',
+            videoId: 'V2hlQkVJZhE',
+            playerVars: {
+                controls: 0,
+                showinfo: 0,
+                modestbranding: 1,
+                fs: 0,
+                iv_load_policy: 3,
+                loop: 1,
+                playlist: 'V2hlQkVJZhE'
+            },
+        }
         this.globalPlayerId = null;
         this.loadYoutubeScript();
     }
@@ -35,7 +47,7 @@ class YoutubeManager {
         let YT = await this.youtubeAPI;
 
         let id = this.idManager.generateId();
-        let player = new YoutubePlayer(YT, id, element, options);
+        let player = isGlobal ? new GlobalYoutubePlayer(YT, id, element, options) : new YoutubePlayer(YT, id, element, options);
         player.player.addEventListener('onStateChange', this.handleStateChange.bind(this, id));
         this.players[id] = player;
         if (isGlobal) this.setAsGlobalPlayer(id);
@@ -54,7 +66,7 @@ class YoutubeManager {
     }
 
     pauseAll(exclude = null) {
-        for (var player in Store.getState().player) {
+        for (var player in this.players) {
             if (player !== exclude) this.players[player].pauseVideo();
         }
     }

@@ -68,7 +68,7 @@ class PlaylistMusicTable extends React.Component {
         let totalCount = dataSource.length;
         let pageSize = this.state.pageSize;
         let pagination = totalCount > pageSize && { pageSize, total: totalCount, current: this.state.currentPage, onChange: this.handlePageChange };
-
+        this.props.currentVideo;
         return (
             <MusicTable className="table-playlist-music-table" dataSource={dataSource} totalCount={dataSource.length} additionalColumns={additionalColumns} onRow={this.rowPropSetup} pageSize={pageSize} pagination={pagination} />
         )

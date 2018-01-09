@@ -21,3 +21,20 @@ export class IdManager {
         return result;
     }
 }
+
+export const observeStore = (store, reducer, onChange) => {
+    let currentState;
+    
+    function handleChange() {
+        // let nextState = reducers.length === 0 ? store.getState() : (({ ...reducers }) => ({ ...reducers }))(object);
+        let nextState = store.getState()[reducer];
+        if (nextState !== currentState) {
+            currentState = nextState;
+            onChange(currentState);
+        }
+    }
+
+    let unsubscribe = store.subscribe(handleChange);
+    handleChange();
+    return unsubscribe();
+}
