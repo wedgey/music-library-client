@@ -2,15 +2,17 @@
 
 import { YTPlayerState, YTPlayerRepeat } from "../enums";
 import Store from "../../store";
-import { PLAYER_LOAD,
-         PLAYER_REPEAT,
-         PLAYER_CHANGE_CURRENT,
-         PLAYER_LOAD_PLAYLIST,
-         PLAYER_UPDATE_STATE,
-         PLAYER_LOAD_PLAY_SONG } from "../../actions/types";
+import { PLAYERS_LOAD,
+         PLAYERS_SET_READY,
+         PLAYERS_REPEAT,
+         PLAYERS_CHANGE_CURRENT,
+         PLAYERS_LOAD_PLAYLIST,
+         PLAYERS_UPDATE_STATE,
+         PLAYERS_LOAD_PLAY_SONG } from "../../actions/types";
 
 import { createPlaylist } from "../../models/creators";
 import { observeStore } from "../../utils/common";
+import Reactor from "../../utils/reactor";
 
 export class YoutubePlayer {
     constructor(YT, id, element, options = {}) {
@@ -33,19 +35,28 @@ export class YoutubePlayer {
 
         this.id = id;
         this.storedPlayer = null;
+        this.eventDispatcher = Reactor;
+        this.eventDispatcher.registerEvent(`${this.id}_events`);
+
+        this.timePollIntervalId = null;
+
+        Store.dispatch({ type: PLAYERS_LOAD, payload: this });
     }
 
     storeListener(newStore) {
+        // console.log(newStore);
         this.storedPlayer = newStore[this.id];
     }
 
     // METHODS
     getCurrentPlaylist() {
-        return Store.getState().player[this.id].playlist;
+        return Store.getState().players[this.id].playlist;
     }
 
     getCurrentSong() {
-        return Store.getState().library[this.storedPlayer.playlist.songs[this.storedPlayer.currentVideo]];
+        let state = Store.getState();
+        // console.log(state);
+        return state.library[state.players[this.id].playlist.songs[state.players[this.id].currentVideo]];
     }
 
     getCurrentTime() {
@@ -57,8 +68,11 @@ export class YoutubePlayer {
     }
 
     getPlayerState() {
-        return this.player.getPlayerState();
-        // return this.storedPlayer.playerState;
+        return Store.getState().players[this.id].playerState;
+    }
+
+    getStorePlayer() {
+        return Store.getState().players[this.id];
     }
 
     // YTPLAYER CONTROLS
@@ -68,49 +82,58 @@ export class YoutubePlayer {
 
     loadVideoBySong(song) {
         if (!song) return;
-        this.loadVideoById(Store.getState().library[song].youtubeId);
+        this.loadVideoById(Store.getState().library[song.id].youtubeId);
+    }
+
+    loadVideoBySongId(songId) {
+        if (songId === undefined) return;
+        this.loadVideoById(Store.getState().library[songId].youtubeId);
     }
 
     loadVideoBySongIndex(index) {
         if (index === undefined) return;
-        Store.dispatch({ type: PLAYER_CHANGE_CURRENT, payload: { id: this.id, currentVideo: index} });
-        this.loadVideoBySong(this.storedPlayer.playlist.songs[index]);
+        Store.dispatch({ type: PLAYERS_CHANGE_CURRENT, payload: { id: this.id, currentVideo: index} });
+        let player = Store.getState().players[this.id];
+        this.loadVideoBySongId(player.playlist.songs[player.currentVideo]);
     }
 
     loadNewSong(song) {
         if (!song) return;
         let playlist = createPlaylist({ songs: [song] });
-        Store.dispatch({ type: PLAYER_LOAD_PLAY_SONG, payload: { id: this.id, currentVideo: 0, playlist }});
+        Store.dispatch({ type: PLAYERS_LOAD_PLAY_SONG, payload: { id: this.id, currentVideo: 0, playlist }});
         this.loadVideoById(song.youtubeId);
     }
 
     loadPlaylist(playlist) {
         if (!playlist) return;
-        Store.dispatch({ type: PLAYER_LOAD_PLAYLIST, payload: { id: this.id, playlist: createPlaylist(playlist) }});
+        if (playlist.songs.length > 0 && (playlist.songs[0].id || playlist.songs[0]._id)) playlist = createPlaylist(playlist);
+        Store.dispatch({ type: PLAYERS_LOAD_PLAYLIST, payload: { id: this.id, playlist: playlist }});
     }
 
     loadPlaylistAndPlay(playlist, index = 0) {
         if (!playlist) return;
         let newPlaylist = createPlaylist(playlist);
-        Store.dispatch({ type: PLAYER_LOAD_PLAY_SONG, payload: { id: this.id, currentVideo: index, playlist }});
-        this.loadVideoBySong(this.storedPlayer.playlist.songs[this.storedPlayer.currentVideo]);
+        Store.dispatch({ type: PLAYERS_LOAD_PLAY_SONG, payload: { id: this.id, currentVideo: index, playlist: newPlaylist }});
+        let player = Store.getState().players[this.id];
+        this.loadVideoBySongId(player.playlist.songs[player.currentVideo]);
     }
 
     seekTo(seconds, allowSeekAhead = true) {
         this.player.seekTo(seconds, allowSeekAhead);
+        if (this.timePollIntervalId === null) this.dispatchEvent({ currentTime: 0, duration: this.getDuration() });
     }
 
     // CONTROLS
     playPrevious() {
-        let { currentVideo } = this.storedPlayer;
-        if (this.storedPlayer.playlist.songs.length === 0 || this.storedPlayer.currentVideo === null) return;
+        let { currentVideo, playlist, repeatStatus } = Store.getState().players[this.id];
+        if (playlist.songs.length === 0 || currentVideo === null) return;
         else if (this.getCurrentTime() <= 5) {
             if (currentVideo > 0) {
                 currentVideo--;
                 return this.loadVideoBySongIndex(currentVideo);
             } else {
-                if (this.storedPlayer.repeatStatus === YTPlayerRepeat.repeatPlaylist) {
-                    currentVideo = this.storedPlayer.playlist.songs.length - 1;
+                if (repeatStatus === YTPlayerRepeat.repeatPlaylist) {
+                    currentVideo = playlist.songs.length - 1;
                     return this.loadVideoBySongIndex(currentVideo);
                 } else {
                     return this.seekTo(0);
@@ -121,7 +144,7 @@ export class YoutubePlayer {
     }
 
     playNext() {
-        let { currentVideo, playlist, repeatStatus } = this.storedPlayer;
+        let { currentVideo, playlist, repeatStatus } = Store.getState().players[this.id];
         if (playlist.songs.length === 0 || currentVideo === null) return;
         else if (currentVideo < playlist.songs.length - 1) {
             currentVideo++;
@@ -144,8 +167,9 @@ export class YoutubePlayer {
     }
 
     playSongAt(index) {
-        if (index === null || index === undefined || index >= this.storedPlayer.playlist.songs.length) return;
-        if (index === this.storedPlayer.currentVideo) this.seekTo(0);
+        let player = this.getStorePlayer();
+        if (index === null || index === undefined || index >= player.playlist.songs.length) return;
+        if (index === player.currentVideo) this.seekTo(0);
         else {
             this.loadVideoBySongIndex(index);
         }
@@ -156,7 +180,7 @@ export class YoutubePlayer {
     }
 
     toggleRepeat() {
-        let repeatStatus = this.storedPlayer.repeatStatus;
+        let repeatStatus = Store.getState().players[this.id].repeatStatus;
         switch (repeatStatus) {
             case YTPlayerRepeat.normal:
                 repeatStatus = YTPlayerRepeat.repeatOne;
@@ -168,14 +192,15 @@ export class YoutubePlayer {
                 repeatStatus = YTPlayerRepeat.normal;
                 break;
         }
-        Store.dispatch({ type: PLAYER_REPEAT, payload: { id: this.id, repeatStatus }});
+        Store.dispatch({ type: PLAYERS_REPEAT, payload: { id: this.id, repeatStatus }});
     }
 
     queueVideoBySong(song) {
         if (!song) return;
         let currentPlaylist = this.getCurrentPlaylist();
-        let playlist = { ...currentPlaylist, songs: [...currentPlaylist[songs], song.id] };
-        if (this.storedPlayer.currentVideo === null) this.loadPlaylistAndPlay(playlist);
+        let playlist = { ...currentPlaylist, songs: [...currentPlaylist.songs, song.id] };
+        console.log(playlist);
+        if (Store.getState().players[this.id].currentVideo === null) this.loadPlaylistAndPlay(playlist);
         else this.loadPlaylist(playlist);
     }
 
@@ -186,7 +211,12 @@ export class YoutubePlayer {
             let originalSongCount = playlist.songs.length;
             playlist.songs = playlist.songs.filter(songId => songId !== song.id);
             let songCountDiff = originalSongCount - playlist.songs.length;
-            if (songCountDiff) this.loadPlaylistAndPlay(playlist, this.storedPlayer.currentVideoo - songCountDiff);
+            if (songCountDiff) {
+                let player = Store.getState().players[this.id];
+                Store.dispatch({ type: PLAYERS_LOAD_PLAY_SONG, payload: { id: this.id, currentVideo: player.currentVideo - songCountDiff, playlist: playlist }});
+                player = Store.getState().players[this.id];
+                this.loadVideoBySongId(player.playlist.songs[player.currentVideo]);
+            }
         }
     }
 
@@ -196,25 +226,58 @@ export class YoutubePlayer {
 
     // EVENT HANDLERS
     onReady(e) {
-        Store.dispatch({ type: PLAYER_LOAD, payload: this });
+        Store.dispatch({ type: PLAYERS_SET_READY, payload: {id: this.id, isReady: true } });
         this.removeStoreListener = observeStore(Store, "player", this.storeListener.bind(this));
     }
 
     onStateChange(e) {
-        let { currentVideo, repeatStatus, playlist } = this.storedPlayer;
+        let { currentVideo, repeatStatus, playlist } = Store.getState().players[this.id];
         let playlistMaxIndex = playlist.songs.length - 1;
         if (playlistMaxIndex === 0 && repeatStatus === YTPlayerRepeat.repeatPlaylist) repeatStatus = YTPlayerRepeat.repeatOne;
         switch(e.data) {
+            case YTPlayerState.playing:
+                if (this.timePollIntervalId) clearInterval(this.timePollIntervalId);
+                this.timePollIntervalId = setInterval(this.handleTimeUpdate.bind(this), 100);
+                break;
             case YTPlayerState.ended:
                 if (currentVideo === null || playlistMaxIndex < 0) return;
                 if (repeatStatus === YTPlayerRepeat.repeatOne) this.seekTo(0);
-                else if (currentVideo < playlistMaxIndex) return this.loadVideoBySongIndex(currentVideo + 1);
+                else if (currentVideo < playlistMaxIndex) this.loadVideoBySongIndex(currentVideo + 1);
                 else if (currentVideo === playlistMaxIndex) {
                     if (repeatStatus === YTPlayerRepeat.repeatPlaylist) {
-                        return this.loadVideoBySongIndex(0);
+                        this.loadVideoBySongIndex(0);
                     }
                 }
+                if (this.timePollIntervalId) {
+                    this.dispatchEvent({ currentTime: 0 });
+                    clearInterval(timePollIntervalId);
+                    this.timePollIntervalId = null;
+                }
+                break;
+            default:
+                if (this.timePollIntervalId) {
+                    clearInterval(this.timePollIntervalId);
+                    this.timePollIntervalId = null;
+                }
         }
-        Store.dispatch({ type: PLAYER_UPDATE_STATE, payload: {id: this.id, playerState: e.data}});
+        Store.dispatch({ type: PLAYERS_UPDATE_STATE, payload: {id: this.id, playerState: e.data}});
+    }
+
+    handleTimeUpdate() {
+        let currentTime = this.getCurrentTime();
+        let duration = this.getDuration();
+        this.dispatchEvent({ currentTime, duration });
+    }
+
+    dispatchEvent(args) {
+        this.eventDispatcher.dispatchEvent(`${this.id}_events`, args);
+    }
+
+    subscribeToTime(callback) {
+        this.eventDispatcher.addEventListener(`${this.id}_events`, callback);
+    }
+
+    unsubscribeFromTime(callback) {
+        this.eventDispatcher.removeEventListener(`${this.id}_events`, callback);
     }
 }

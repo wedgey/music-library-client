@@ -53,7 +53,7 @@ class YoutubeManager {
     }
 
     pauseAll(exclude = null) {
-        for (var player in Store.getState().player) {
+        for (var player in Store.getState().players) {
             if (player !== exclude) this.players[player].pauseVideo();
         }
     }
@@ -64,6 +64,14 @@ class YoutubeManager {
 
     getGlobalPlayer() {
         return this.players[Store.getState().playerManager.globalPlayerId];
+    }
+
+    hasPlayersChanged(currentProps, nextProps, id = null) {
+        if (currentProps.players !== nextProps.players) {
+            if (id && currentProps.players[id] !== nextProps.players[id]) return true;
+            return true;
+        }
+        return false;
     }
 
     destroyPlayer(id) {

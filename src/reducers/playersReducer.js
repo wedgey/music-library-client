@@ -1,13 +1,13 @@
 "use strict"
 
 import { createPlaylist } from "../models/creators";
-import { PLAYER_LOAD,
-         PLAYER_SET_READY,
-         PLAYER_REPEAT,
-         PLAYER_CHANGE_CURRENT,
-         PLAYER_LOAD_PLAYLIST, 
-         PLAYER_UPDATE_STATE,
-         PLAYER_LOAD_PLAY_SONG } from "../actions/types";
+import { PLAYERS_LOAD,
+         PLAYERS_SET_READY,
+         PLAYERS_REPEAT,
+         PLAYERS_CHANGE_CURRENT,
+         PLAYERS_LOAD_PLAYLIST, 
+         PLAYERS_UPDATE_STATE,
+         PLAYERS_LOAD_PLAY_SONG } from "../actions/types";
 
 import { YTPlayerRepeat, YTPlayerState } from "../utils/enums";
 
@@ -21,28 +21,28 @@ function createPlayer(ytPlayer) {
         playlist: createPlaylist(),
         currentVideo: null,
         playerState: YTPlayerState.unstarted,
-        repeatStatus: YTPlayerRepeat.repeatOne
+        repeatStatus: YTPlayerRepeat.repeatPlaylist
     }
 }
 
 export default function(state = initialState, action) {
     switch (action.type) {
-        case PLAYER_LOAD:
+        case PLAYERS_LOAD:
             let player = createPlayer(action.payload);
             return { ...state, [player.id]: player };
-        case PLAYER_SET_READY:
+        case PLAYERS_SET_READY:
             return { ...state, [action.payload.id]: { ...state[action.payload.id], isReady: action.payload.isReady } };
-        case PLAYER_REPEAT:
+        case PLAYERS_REPEAT:
             return { ...state, [action.payload.id]: { ...state[action.payload.id], repeatStatus: action.payload.repeatStatus }};
-        case PLAYER_CHANGE_CURRENT:
+        case PLAYERS_CHANGE_CURRENT:
             return { ...state, [action.payload.id]: { ...state[action.payload.id], currentVideo: action.payload.currentVideo }};
-        case PLAYER_LOAD_PLAYLIST:
+        case PLAYERS_LOAD_PLAYLIST:
             let newState = { ...state, [action.payload.id]: { ...state[action.payload.id], playlist: action.payload.playlist }};
             if (action.payload.currentVideo) newState.currentVideo = action.payload.currentVideo;
             return newState;
-        case PLAYER_UPDATE_STATE:
+        case PLAYERS_UPDATE_STATE:
             return { ...state, [action.payload.id]: { ...state[action.payload.id], playerState: action.payload.playerState }};
-        case PLAYER_LOAD_PLAY_SONG:
+        case PLAYERS_LOAD_PLAY_SONG:
             return { ...state, [action.payload.id]: { ...state[action.payload.id], currentVideo: action.payload.currentVideo, playlist: action.payload.playlist }};
     }
     return state;

@@ -24,7 +24,6 @@ export class IdManager {
 
 export const observeStore = (store, reducer, onChange) => {
     let currentState;
-    
     function handleChange() {
         // let nextState = reducers.length === 0 ? store.getState() : (({ ...reducers }) => ({ ...reducers }))(object);
         let nextState = store.getState()[reducer];
