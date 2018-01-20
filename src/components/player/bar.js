@@ -57,7 +57,9 @@ class PlayerBar extends React.Component {
     }
 
     handleUpdatePlayerTime({currentTime, duration}) {
-        this.setState({ playerVideoTime: duration, playerCurrentTime: currentTime });
+        let stateUpdate = { playerVideoTime: duration };
+        if (!this.state.isSeeking) stateUpdate.playerCurrentTime = currentTime;
+        this.setState(stateUpdate);
     }
 
     togglePlay() {
@@ -111,7 +113,7 @@ class PlayerBar extends React.Component {
                         <Slider tipFormatter={this.formatSliderToolTip} step={0.001} max={this.state.playerVideoTime} value={this.state.playerCurrentTime} onChange={this.onSeek} onAfterChange={this.onSeekTo} />
                     </Col>
                     <Col>
-                        <span>{formatToMinutes(this.state.playerVideoTime)}</span>
+                        <span>{`${this.state.playerVideoTime - this.state.playerCurrentTime === 0 ? "" : "-"}${formatToMinutes(this.state.playerVideoTime - this.state.playerCurrentTime)}`}</span>
                     </Col>
                     <Col>
                         <Button.Group>

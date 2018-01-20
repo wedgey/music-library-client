@@ -44,7 +44,6 @@ export class YoutubePlayer {
     }
 
     storeListener(newStore) {
-        // console.log(newStore);
         this.storedPlayer = newStore[this.id];
     }
 
@@ -55,7 +54,6 @@ export class YoutubePlayer {
 
     getCurrentSong() {
         let state = Store.getState();
-        // console.log(state);
         return state.library[state.players[this.id].playlist.songs[state.players[this.id].currentVideo]];
     }
 
@@ -199,7 +197,6 @@ export class YoutubePlayer {
         if (!song) return;
         let currentPlaylist = this.getCurrentPlaylist();
         let playlist = { ...currentPlaylist, songs: [...currentPlaylist.songs, song.id] };
-        console.log(playlist);
         if (Store.getState().players[this.id].currentVideo === null) this.loadPlaylistAndPlay(playlist);
         else this.loadPlaylist(playlist);
     }
@@ -250,7 +247,7 @@ export class YoutubePlayer {
                 }
                 if (this.timePollIntervalId) {
                     this.dispatchEvent({ currentTime: 0 });
-                    clearInterval(timePollIntervalId);
+                    clearInterval(this.timePollIntervalId);
                     this.timePollIntervalId = null;
                 }
                 break;

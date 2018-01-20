@@ -29,23 +29,10 @@ class PlaylistMusicTable extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.playlist !== nextProps.playlist) {
+        if (this.props.currentVideo !== nextProps.currentVideo) {
             let currentPage = Math.floor((nextProps.currentVideo || 0) / this.state.pageSize) + 1;
             this.setState({ currentPage });
         }
-        // if (this.props.players !== nextProps.players || this.props.playlist !== nextProps.playlist) {
-        //     if (nextProps.playerManager.globalPlayerId) {
-        //         let globalPlayer = YoutubeManager.getGlobalPlayer();
-        //         let storePlayer = globalPlayer.getStorePlayer();
-        //         if (storePlayer.isReady && storePlayer.playlist.id === nextProps.match.) {
-        //             let currentGlobalPlaylist = globalPlayer.getCurrentPlaylist();
-        //             let currentPage = 1;
-        //             if (currentGlobalPlaylist.id === nextProps.playlist.id) currentPage = (Math.floor(storePlayer.currentVideo / this.state.pageSize)) + 1;
-        //             this.setState({ currentPage, currentVideo: storePlayer.currentVideo });
-        //         }
-        //     }
-
-        // }
     }
 
     rowPropSetup(record, index) {
