@@ -21,14 +21,12 @@ class PlayerBar extends React.Component {
 
         this.player = null;
 
-        // this.handlePlayerStateChange = this.handlePlayerStateChange.bind(this);
         this.onSeek = this.onSeek.bind(this);
         this.onSeekTo = this.onSeekTo.bind(this);
         this.togglePlay = this.togglePlay.bind(this);
         this.handlePrevious = this.handlePrevious.bind(this);
         this.handleNext = this.handleNext.bind(this);
         this.toggleRepeat = this.toggleRepeat.bind(this);
-        // this.updatePlayerTime = this.updatePlayerTime.bind(this);
         this.handleUpdatePlayerTime = this.handleUpdatePlayerTime.bind(this);
 
     }
