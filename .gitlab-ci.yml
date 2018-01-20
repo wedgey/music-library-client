@@ -1,0 +1,39 @@
+image: node:latest
+
+cache:
+    paths:
+        - node_modules/
+    
+stages:
+    - build
+    - deploy
+    
+build_prod:
+    stage: build
+    only: 
+        refs: 
+            - /^stable\/.*/
+    artifacts:
+        paths:
+            - dist/
+    before_script:
+        - npm install
+    script:
+        - npm run prod
+
+deploy_stage:
+    stage: deploy
+    only:
+        refs:
+            - /^stable\/.*/
+    dependencies:
+        - build_prod
+    before_script:
+        - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+        - mkdir -p ~/.ssh
+        - eval $(ssh-agent -s)
+        - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+        - ssh-add <(echo "$STAGING_PRIVATE_KEY")
+    script:
+        - ssh -p22 kpoplibrary@desmondpoon.com "rm -rf ~/www/client/dist"
+        - scp -r dist/ kpoplibrary@desmondpoon.com:~/www/client/dist/
