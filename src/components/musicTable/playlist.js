@@ -18,7 +18,8 @@ class PlaylistMusicTable extends React.Component {
 
         this.state = {
             currentPage: 1,
-            pageSize: 10
+            pageSize: 10,
+            currentVideo: null
         }
 
         this.rowPropSetup = this.rowPropSetup.bind(this);
@@ -28,11 +29,8 @@ class PlaylistMusicTable extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.playlist !== nextProps.playlist) {
-            let currentGlobalPlayer = YoutubeManager.getGlobalPlayer();
-            let currentGlobalPlaylist = currentGlobalPlayer ? currentGlobalPlayer.getCurrentPlaylist() : {};
-            let currentPage = 1;
-            if (currentGlobalPlaylist.id === nextProps.playlist.id && currentGlobalPlayer) currentPage = (Math.floor(currentGlobalPlayer.currentVideo / this.state.pageSize)) + 1;
+        if (this.props.currentVideo !== nextProps.currentVideo) {
+            let currentPage = Math.floor((nextProps.currentVideo || 0) / this.state.pageSize) + 1;
             this.setState({ currentPage });
         }
     }
@@ -50,9 +48,10 @@ class PlaylistMusicTable extends React.Component {
 
     playSong(song, index) {
         let globalPlayer = YoutubeManager.getGlobalPlayer();
+        let playlist = globalPlayer.getCurrentPlaylist();
         if (globalPlayer) {
-            let playlistIndex = index + ((this.state.currentPage - 1) * this.state.pageSize)
-            if (globalPlayer.playlist.id === this.props.playlist.id) globalPlayer.playSongAt(playlistIndex);
+            let playlistIndex = index + ((this.state.currentPage - 1) * this.state.pageSize);
+            if (playlist.id === this.props.playlist.id) globalPlayer.playSongAt(playlistIndex);
             else globalPlayer.loadPlaylistAndPlay(this.props.playlist, playlistIndex);
         }
     }
@@ -68,7 +67,6 @@ class PlaylistMusicTable extends React.Component {
         let totalCount = dataSource.length;
         let pageSize = this.state.pageSize;
         let pagination = totalCount > pageSize && { pageSize, total: totalCount, current: this.state.currentPage, onChange: this.handlePageChange };
-
         return (
             <MusicTable className="table-playlist-music-table" dataSource={dataSource} totalCount={dataSource.length} additionalColumns={additionalColumns} onRow={this.rowPropSetup} pageSize={pageSize} pagination={pagination} />
         )
@@ -85,7 +83,9 @@ PlaylistMusicTable.defaultProps = {
 
 const mapStoreToProps = (store) => {
     return {
-        songs: store.library
+        songs: store.library,
+        playerManager: store.playerManager,
+        players: store.players
     }
 }
 

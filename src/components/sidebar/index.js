@@ -8,19 +8,30 @@ import ClickInput from "../common/clickInput";
 
 import LocalizationManager from "../../localization";
 import { getPlaylists, deletePlaylist, createPlaylist } from "../../actions/playlistActions";
+import YoutubeManager from "../../utils/youtubeManager";
 
 class SideBar extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            isCreatePlaylistActive: false
+            isCreatePlaylistActive: false,
+            currentPlaylist: null
         }
 
         this.stringObj = LocalizationManager.localization;
         props.getPlaylists();
 
         this.handleCreatePlaylist = this.handleCreatePlaylist.bind(this);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        let stateUpdate = {};
+        if (YoutubeManager.hasPlayersChanged(this.props, nextProps)) {
+            let globalPlayer = YoutubeManager.getGlobalPlayer();
+            if (globalPlayer) stateUpdate.currentPlaylist = globalPlayer.getCurrentPlaylist();
+        }
+        this.setState(stateUpdate);
     }
 
     handleCreatePlaylist({value}) {
@@ -43,7 +54,7 @@ class SideBar extends React.Component {
                 <Menu.Item key={playlist.id}>
                     <Dropdown overlay={contextMenu} trigger={['contextMenu']}>
                         <Link to={`/playlist/${playlist.id}`}>
-                            <div><Icon type="file-text" /> {playlist.name} {this.props.globalPlayer.playlist.id === playlist.id && <Icon type='sound' />}</div>
+                            <div><Icon type="file-text" /> {playlist.name} {this.state.currentPlaylist && this.state.currentPlaylist.id === playlist.id && <Icon type='sound' />}</div>
                         </Link>
                     </Dropdown>
                 </Menu.Item>
@@ -92,6 +103,7 @@ const mapStateToProps = (store) => {
         ui: store.ui,
         user: store.user,
         playlists: store.playlists,
+        players: store.players,
         globalPlayer: store.globalPlayer
     }
 }

@@ -10,27 +10,33 @@ class NowPlaying extends React.Component {
         super(props);
 
         this.state = {
-            globalPlayer: null,
+            currentVideo: null,
             playlist: { songs: [] }
         }
     }
 
     componentDidMount() {
-        if (this.props.globalPlayer.player !== null) {
-            this.setState({ globalPlayer: YoutubeManager.getGlobalPlayer(), playlist: this.props.globalPlayer.playlist });
+        if (this.props.playerManager.globalPlayerId !== null && this.props.players[this.props.playerManager.globalPlayerId]) {
+            let playerStore = this.props.players[this.props.playerManager.globalPlayerId];
+            let playlist = { ...playerStore.playlist } || {};
+            if (playlist.songs && playlist.songs.length > 0) playlist.songs = playlist.songs.map(songId => this.props.songs[songId]);
+            this.setState({ currentVideo: playerStore.currentVideo, playlist: playlist});
         }
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.state.globalPlayer === null && this.props.globalPlayer.player !== null) {
-            this.setState({ globalPlayer: YoutubeManager.getGlobalPlayer(), playlist: this.props.globalPlayer.playlist }, () => console.log(this.state));
+        if (this.props.playerManager.globalPlayerId !== nextProps.playerManager.globalPlayerId || this.props.players[this.props.playerManager.globalPlayerId] !== nextProps.players[nextProps.playerManager.globalPlayerId]) {
+            let playerStore = nextProps.players[nextProps.playerManager.globalPlayerId];
+            let playlist = { ...playerStore.playlist } || {};
+            if (playlist.songs && playlist.songs.length > 0) playlist.songs = playlist.songs.map(songId => nextProps.songs[songId]);
+            this.setState({ currentVideo: playerStore.currentVideo, playlist: playlist});
         }
     }
 
     render() {
         return (
             <div className="page-now-playing">
-                <PlaylistMusicTable playlist={this.state.playlist} currentVideo={this.props.globalPlayer.currentVideo} showOptions={false} />
+                <PlaylistMusicTable playlist={this.state.playlist} currentVideo={this.state.currentVideo} showOptions={false} />
             </div>
         )
     }
@@ -38,7 +44,9 @@ class NowPlaying extends React.Component {
 
 const mapStoreToProps = (store) => {
     return {
-        globalPlayer: store.globalPlayer
+        songs: store.library,
+        players: store.players,
+        playerManager: store.playerManager
     }
 }
 

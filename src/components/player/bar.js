@@ -2,9 +2,7 @@ import React from "react";
 import { Button, Col, Divider, Icon, Row, Slider } from "antd";
 import { connect } from "react-redux";
 
-// import PlayerVideo from "./video";
 import youtubeManager from "../../utils/youtubeManager";
-
 import { YTPlayerRepeat, YTPlayerState } from "../../utils/enums";
 import { formatToMinutes } from "../../utils/common";
 
@@ -13,110 +11,69 @@ class PlayerBar extends React.Component {
         super(props);
 
         this.state = {
-            playerState: -1,
-            playerCurrentTime: 0,
-            playerVideoTime: 0,
-            timePollIntervalId: null,
             isSeeking: false,
             seekPercentage: 0,
-            playerOptions: {
-                repeatStatus: YTPlayerRepeat.normal
-            },
-            currentSong: {}
+            playerVideoTime: 0,
+            playerCurrentTime: 0,
+            timePollIntervalId: null,
+            playerStore: null
         }
 
         this.player = null;
 
-        this.toggleRepeat = this.toggleRepeat.bind(this);
+        this.onSeek = this.onSeek.bind(this);
+        this.onSeekTo = this.onSeekTo.bind(this);
         this.togglePlay = this.togglePlay.bind(this);
         this.handlePrevious = this.handlePrevious.bind(this);
         this.handleNext = this.handleNext.bind(this);
-        this.onPlayerReady = this.onPlayerReady.bind(this);
-        this.onPlayerStateChange = this.onPlayerStateChange.bind(this);
-        this.onPlayerOptionsChange = this.onPlayerOptionsChange.bind(this);
-        this.onSeek = this.onSeek.bind(this);
-        this.onSeekTo = this.onSeekTo.bind(this);
+        this.toggleRepeat = this.toggleRepeat.bind(this);
+        this.handleUpdatePlayerTime = this.handleUpdatePlayerTime.bind(this);
+
     }
 
-    async componentDidMount() {
-        let playerOptions = {
-            width: '92',
-            height: '36',
-            // videoId: 'V2hlQkVJZhE',
-            events: {
-                'onReady': this.onPlayerReady,
-                'onStateChange':  this.onPlayerStateChange
+    componentDidMount() {
+        if (!youtubeManager.getGlobalPlayer()) youtubeManager.createYoutubePlayer(this.youtubePlayerElement, {}, true);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        let newState = {};
+        if (youtubeManager.hasPlayersChanged(this.props, nextProps)) {
+            this.setState({ playerStore: nextProps.players[nextProps.playerManager.globalPlayerId] })
+            let player = youtubeManager.getGlobalPlayer();
+            if (player && player.getStorePlayer().isReady && this.player !== player) {
+                let callback = this.handleUpdatePlayerTime;
+                if (this.player) this.player.unsubscribeFromTime(callback);
+
+                this.player = player;
+                this.player.subscribeToTime(callback);
             }
         }
-        let playerId = await youtubeManager.createYoutubePlayer(this.youtubePlayerElement, playerOptions, true);
-        let ytPlayer = youtubeManager.getPlayer(playerId);
-        ytPlayer.player.getIframe().addEventListener('YTPlayerOptionsChange', this.onPlayerOptionsChange);
-        this.player = ytPlayer;
-        this.setState({playerOptions: ytPlayer.playerOptions });
     }
 
     componentWillUnmount() {
-        clearInterval(this.state.timePollIntervalId);
+        this.player.unsubscribeFromTime(this.handleUpdatePlayerTime);
     }
 
-    onPlayerReady(e) {
-        this.setState({ playerVideoTime: this.player.getDuration() });
-    }
-
-    onPlayerStateChange(e) {
-        this.setState({ playerState: e.data, currentSong: this.player.getCurrentSong() });
-        switch (e.data) {
-            case YTPlayerState.playing: {
-                let pollId = setInterval(() => { 
-                    let currentTime = this.player.getCurrentTime();
-                    if (this.state.isSeeking) return;
-                    let duration = this.player.getDuration();
-                    this.setState({
-                        playerVideoTime: duration,
-                        playerCurrentTime: currentTime
-                    });
-                }, 100)
-                this.setState({ timePollIntervalId: pollId });
-                break;
-            }
-            case YTPlayerState.ended: {
-                this.setState({ playerCurrentTime: 0 });
-                if (this.state.timePollIntervalId) {
-                    clearInterval(this.state.timePollIntervalId);
-                    this.setState({timePollIntervalId: null});
-                }
-            }
-            default: {
-                if (this.state.timePollIntervalId) {
-                    clearInterval(this.state.timePollIntervalId);
-                    this.setState({timePollIntervalId: null});
-                }
-            }
-        }
-    }
-
-    onPlayerOptionsChange(e) {
-        this.setState({playerOptions: e.detail});
+    handleUpdatePlayerTime({currentTime, duration}) {
+        let stateUpdate = { playerVideoTime: duration };
+        if (!this.state.isSeeking) stateUpdate.playerCurrentTime = currentTime;
+        this.setState(stateUpdate);
     }
 
     togglePlay() {
-        let { player } = this;
-        if (player) player.getPlayerState() === YTPlayerState.playing ? player.pauseVideo() : player.playVideo();
-    }
-
-    toggleRepeat() {
-        let { player } = this;
-        if (player) player.toggleRepeat();
+        this.player.getPlayerState() === YTPlayerState.playing ? this.player.pauseVideo() : this.player.playVideo();
     }
 
     handlePrevious() {
-        let { player } = this;
-        if (player) player.playPrevious();
+        if (this.player) this.player.playPrevious();
     }
 
     handleNext() {
-        let { player } = this;
-        if (player) player.playNext();
+        if (this.player) this.player.playNext();
+    }
+
+    toggleRepeat() {
+        if (this.player) this.player.toggleRepeat();
     }
 
     onSeek(time) {
@@ -136,14 +93,15 @@ class PlayerBar extends React.Component {
     }
 
     render() {
-        let repeatIcon = this.state.playerOptions.repeatStatus === YTPlayerRepeat.repeatOne ? 'reload' : this.state.playerOptions.repeatStatus === YTPlayerRepeat.repeatPlaylist ? 'retweet' : 'swap-right';
-        let { artistNames, title } = this.state.currentSong || {};
+        let playerStore = this.state.playerStore || {};
+        let { artistNames, title } = this.player ? this.player.getCurrentSong() || {} : {};
+        let repeatIcon = playerStore.repeatStatus === YTPlayerRepeat.repeatOne ? 'reload' : playerStore.repeatStatus === YTPlayerRepeat.repeatPlaylist ? 'retweet': 'swap-right';
         return (
             <div className="cmpt-player-bar">
                 <Row type="flex" align="middle" style={{height: '100%'}} gutter={12}>
                     <Col className="ytContainer">
                         <div className="video-overlay"></div>
-                        <div ref={r => { this.youtubePlayerElement = r}}></div>
+                        <div style={{width: '92px', height: '36px'}} ref={r => { this.youtubePlayerElement = r}}></div>
                     </Col>
                     <Col style={{width: '250px'}}>
                         <span className="truncate" style={{lineHeight: '1em'}}>{title}</span><br />
@@ -153,13 +111,13 @@ class PlayerBar extends React.Component {
                         <Slider tipFormatter={this.formatSliderToolTip} step={0.001} max={this.state.playerVideoTime} value={this.state.playerCurrentTime} onChange={this.onSeek} onAfterChange={this.onSeekTo} />
                     </Col>
                     <Col>
-                        <span>{formatToMinutes(this.state.playerVideoTime)}</span>
+                        <span>{`${this.state.playerVideoTime - this.state.playerCurrentTime === 0 ? "" : "-"}${formatToMinutes(this.state.playerVideoTime - this.state.playerCurrentTime)}`}</span>
                     </Col>
                     <Col>
                         <Button.Group>
-                            <Button icon='backward' onClick={this.handlePrevious} />
-                            <Button icon={this.state.playerState === YTPlayerState.playing ? 'pause' : 'caret-right'} onClick={this.togglePlay} />
-                            <Button icon='forward' onClick={this.handleNext} />
+                            <Button icon="backward" onClick={this.handlePrevious} />
+                            <Button icon={playerStore.playerState === YTPlayerState.playing ? 'pause' : 'caret-right'} onClick={this.togglePlay} />
+                            <Button icon="forward" onClick={this.handleNext} />
                         </Button.Group>
                         <Button.Group>
                             <Button icon={repeatIcon} onClick={this.toggleRepeat} />
@@ -171,4 +129,11 @@ class PlayerBar extends React.Component {
     }
 }
 
-export default PlayerBar;
+const mapStoreToProps = (store) => {
+    return {
+        players: store.players,
+        playerManager: store.playerManager
+    }
+}
+
+export default connect(mapStoreToProps, {})(PlayerBar);

@@ -3,32 +3,19 @@ import { notification } from "antd";
 import { YOUTUBE_IFRAME_URL } from "../../config/main";
 import { IdManager } from "../common";
 import { YTPlayerState, YTPlayerRepeat } from "../enums";
-import { GLOBAL_PLAYER_LOAD, UI_GLOBAL_PLAYER_LOAD } from "../../actions/types";
+import { PLAYER_MANAGER_LOAD_GLOBAL } from "../../actions/types";
+import Store from "../../store";
 
-import { GlobalYoutubePlayer, YoutubePlayer } from "./playerModel";
+
+import { YoutubePlayer } from "./playerModel";
 
 class YoutubeManager {
     constructor(props) {
         this.idManager = new IdManager("YTPlayer");
 
         this.youtubeAPI = null;
-        this.players = {};
         this.active = null;
-        this.defaultPlayerOptions = {
-            height: '100%',
-            width: '100%',
-            videoId: 'V2hlQkVJZhE',
-            playerVars: {
-                controls: 0,
-                showinfo: 0,
-                modestbranding: 1,
-                fs: 0,
-                iv_load_policy: 3,
-                loop: 1,
-                playlist: 'V2hlQkVJZhE'
-            },
-        }
-        this.globalPlayerId = null;
+        this.players = {};
         this.loadYoutubeScript();
     }
 
@@ -47,7 +34,7 @@ class YoutubeManager {
         let YT = await this.youtubeAPI;
 
         let id = this.idManager.generateId();
-        let player = isGlobal ? new GlobalYoutubePlayer(YT, id, element, options) : new YoutubePlayer(YT, id, element, options);
+        let player = new YoutubePlayer(YT, id, element, options);
         player.player.addEventListener('onStateChange', this.handleStateChange.bind(this, id));
         this.players[id] = player;
         if (isGlobal) this.setAsGlobalPlayer(id);
@@ -55,7 +42,7 @@ class YoutubeManager {
     }
 
     setAsGlobalPlayer(id) {
-        this.globalPlayerId = id;
+        Store.dispatch({ type: PLAYER_MANAGER_LOAD_GLOBAL, payload: id });
     }
 
     handleStateChange(id, e) {
@@ -66,7 +53,7 @@ class YoutubeManager {
     }
 
     pauseAll(exclude = null) {
-        for (var player in this.players) {
+        for (var player in Store.getState().players) {
             if (player !== exclude) this.players[player].pauseVideo();
         }
     }
@@ -76,14 +63,21 @@ class YoutubeManager {
     }
 
     getGlobalPlayer() {
-        return this.players[this.globalPlayerId];
+        return this.players[Store.getState().playerManager.globalPlayerId];
+    }
+
+    hasPlayersChanged(currentProps, nextProps, id = null) {
+        if (currentProps.players !== nextProps.players) {
+            if (id && currentProps.players[id] !== nextProps.players[id]) return true;
+            return true;
+        }
+        return false;
     }
 
     destroyPlayer(id) {
         if (!this.players[id]) return false;
         this.players[id].destroy();
         delete this.players[id];
-        if (this.globalPlayerId === id) this.globalPlayerId = null;
         return true;
     }
 }
