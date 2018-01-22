@@ -18,6 +18,14 @@ class ClickInput extends React.Component {
         this.handleInputBlur = this.handleInputBlur.bind(this);
     }
 
+    componentDidMount() {
+        if (this.props.value !== this.state.inputValue) this.setState({ inputValue: this.props.value });
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.value !== this.props.value) this.setState({ inputValue: nextProps.value });
+    }
+
     handleShowInput(e) {
         this.setState({ inputVisible: true }, () => this.input.focus());
     }
@@ -29,11 +37,11 @@ class ClickInput extends React.Component {
     handleInputConfirm(e) {
         let value = this.state.inputValue;
         if (value !== "" && this.props.confirmHandler) this.props.confirmHandler({value});
-        this.setState({ inputVisible: false, inputValue: "" });
+        this.setState({ inputVisible: false, inputValue: this.props.value });
     }
 
     handleInputBlur(e) {
-        this.setState({ inputVisible: false, inputValue: "" });
+        this.setState({ inputVisible: false, inputValue: this.props.value });
     }
 
     render() {
@@ -59,11 +67,13 @@ class ClickInput extends React.Component {
 
 ClickInput.propTypes = {
     confirmHandler: PropTypes.func,
-    confirmOnBlur: PropTypes.bool
+    confirmOnBlur: PropTypes.bool,
+    value: PropTypes.string,
 }
 
 ClickInput.defaultProps = {
-    confirmOnBlur: false
+    confirmOnBlur: false,
+    value: ""
 }
 
 export default ClickInput;

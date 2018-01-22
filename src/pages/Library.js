@@ -14,7 +14,6 @@ class Library extends React.Component {
         this.state = {
             songs: [],
             totalCount: 0,
-            searchTerm: "",
             loading: false
         }
 

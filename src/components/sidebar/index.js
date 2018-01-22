@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { Dropdown, Icon, Menu, Popconfirm } from "antd";
 import { Link } from "react-router-dom";
 
+import { RoleTitles } from "../../config/roles";
 import SideBarUserInfo from "./userInfo";
 import ClickInput from "../common/clickInput";
 
@@ -85,6 +86,16 @@ class SideBar extends React.Component {
                             </Link>
                         </Menu.Item>
                     </Menu.ItemGroup>
+                    {this.props.user.role === RoleTitles.admin && 
+                    <Menu.ItemGroup key={this.stringObj.componentsText.sideBarText.headers.admin} title={this.stringObj.componentsText.sideBarText.headers.admin}>
+                        <Menu.Item key={this.stringObj.componentsText.sideBarText.linkText.manageSongs}>
+                            <Link to="/admin/managesongs">
+                                <Icon type="database" />
+                                <span>{this.stringObj.componentsText.sideBarText.linkText.manageSongs}</span>
+                            </Link>
+                        </Menu.Item>
+                    </Menu.ItemGroup>
+                    }
                     <Menu.ItemGroup key={this.stringObj.componentsText.sideBarText.headers.playlist} title={this.stringObj.componentsText.sideBarText.headers.playlist}>
                         <Menu.Item key="create-playlist">
                             {/* <CreatePlaylistOption createPlaylist={this.props.createPlaylist} /> */}

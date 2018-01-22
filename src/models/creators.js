@@ -1,3 +1,5 @@
+import { SongStatus } from "../utils/enums";
+
 export const createUser = (user = {}) => {
     return {
         id: user._id || user.id,
@@ -14,7 +16,8 @@ export const createSong = (song = {}) => {
         artist: song.artist.map(artist => createArtist(artist)),
         artistNames: song.artist.map(artist => artist.name).join(', '),
         youtubeId: song.youtubeId || "",
-        duration: song.metadata && song.metadata.duration
+        duration: song.metadata && song.metadata.duration,
+        status: song.status || SongStatus.pending
     }
 }
 

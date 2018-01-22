@@ -17,6 +17,9 @@ import NowPlaying from "./pages/NowPlaying";
 import Register from "./pages/Register";
 import Playlist from "./pages/Playlist";
 
+// Admin Pages
+import AdminManageSongs from "./pages/admin/ManageSongs";
+
 class Routes extends React.PureComponent { // Uses pure component to prevent updating of child if no prop changes affects it ie. ui toggles
     constructor(props) {
         super(props);
@@ -55,8 +58,9 @@ class Routes extends React.PureComponent { // Uses pure component to prevent upd
                 <RouteWithLayout exact path="/library" layout={Layout} component={Library} allowedRoles={this.Members} />
                 <RouteWithLayout exact path="/nowplaying" layout={Layout} component={NowPlaying} allowedRoles={this.Members} />
                 <RouteWithLayout exact path="/playlist/:id" layout={Layout} component={Playlist} allowedRoles={this.Members} />
-                {/* <RouteWithLayout exact path="/nowplaying" layout={Layout} component={Library} allowedRoles={this.Members} /> */}
-                {/* <Route path="*" render={() => <Redirect to="/library" />} /> */}
+
+                <RouteWithLayout exact path="/admin/managesongs" layout={Layout} component={AdminManageSongs} allowedRoles={this.Admin} />
+
                 <RouteWithLayout path="*" layout={Layout} component={Library} allowedRoles={this.Members} />
             </Switch>
         );

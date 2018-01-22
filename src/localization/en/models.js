@@ -2,7 +2,8 @@ const modelsText = {
     music: {
         title: "Title",
         artist: "Artist",
-        duration: "Duration"
+        duration: "Duration",
+        status: "Status"
     }
 }
 
