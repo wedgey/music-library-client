@@ -8,7 +8,8 @@ import { PLAYERS_LOAD,
          PLAYERS_CHANGE_CURRENT,
          PLAYERS_LOAD_PLAYLIST,
          PLAYERS_UPDATE_STATE,
-         PLAYERS_LOAD_PLAY_SONG } from "../../actions/types";
+         PLAYERS_LOAD_PLAY_SONG,
+         PLAYERS_DESTROY } from "../../actions/types";
 
 import { createPlaylist } from "../../models/creators";
 import { observeStore } from "../../utils/common";
@@ -219,6 +220,7 @@ export class YoutubePlayer {
 
     destroy() {
         this.player.destroy();
+        Store.dispatch({ type: PLAYERS_DESTROY, payload: { id: this.id} });
     }
 
     // EVENT HANDLERS

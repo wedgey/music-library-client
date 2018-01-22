@@ -2,12 +2,19 @@ const componentsText = {
     sideBarText: {
         headers: {
             music: "Music",
-            playlist: "Playlist"
+            playlist: "Playlist",
+            admin: "Admin"
         },
         linkText: {
             library: "Library",
             nowPlaying: "Now Playing",
-            addSong: "Add Song"
+            addSong: "Add Song",
+            manageSongs: "Manage Songs"
+        }
+    },
+    musicTable: {
+        manageSongs: {
+            approve: "Approve"
         }
     }
 }

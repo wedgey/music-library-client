@@ -1,3 +1,9 @@
+export const SongStatus = {
+    active: "Active",
+    pending: "Pending",
+    deleted: "Deleted"
+}
+
 export const YTPlayerState = {
     unstarted: -1,
     ended: 0,

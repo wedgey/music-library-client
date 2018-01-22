@@ -7,7 +7,8 @@ import { PLAYERS_LOAD,
          PLAYERS_CHANGE_CURRENT,
          PLAYERS_LOAD_PLAYLIST, 
          PLAYERS_UPDATE_STATE,
-         PLAYERS_LOAD_PLAY_SONG } from "../actions/types";
+         PLAYERS_LOAD_PLAY_SONG,
+         PLAYERS_DESTROY } from "../actions/types";
 
 import { YTPlayerRepeat, YTPlayerState } from "../utils/enums";
 
@@ -44,6 +45,9 @@ export default function(state = initialState, action) {
             return { ...state, [action.payload.id]: { ...state[action.payload.id], playerState: action.payload.playerState }};
         case PLAYERS_LOAD_PLAY_SONG:
             return { ...state, [action.payload.id]: { ...state[action.payload.id], currentVideo: action.payload.currentVideo, playlist: action.payload.playlist }};
+        case PLAYERS_DESTROY:
+            let { [action.payload.id]: destroyedPlayer, ...rest } = state;
+            return { ...rest };
     }
     return state;
 }

@@ -17,3 +17,21 @@ export function getSongs({ title, page, pageSize, sortBy, sortOrder }) {
                     .catch(error => reject(error));
     });
 }
+
+// Get Pending Songs Action
+export function getPendingSongs({ title, page, pageSize, sortBy, sortOrder }) {
+    return new Promise((resolve, reject) => {
+        ajaxManager.get(`${SERVER_URL}/song/pending`, { params: { title, page, pageSize }})
+                    .then(response => resolve({songs: buildSongObjFromArray(response.data.songs), totalCount: response.data.totalCount }))
+                    .catch(error => reject(error));
+    });
+}
+
+// Update Song Status
+export function updateSongStatus(id, status) {
+    return new Promise((resolve, reject) => {
+        ajaxManager.post(`${SERVER_URL}/song/updatestatus`, { id, status })
+                    .then(response => resolve())
+                    .catch(error => reject(error));
+    });
+}
