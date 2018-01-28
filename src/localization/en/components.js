@@ -9,7 +9,8 @@ const componentsText = {
             library: "Library",
             nowPlaying: "Now Playing",
             addSong: "Add Song",
-            manageSongs: "Manage Songs"
+            manageSongs: "Manage Songs",
+            manageChannels: "Manage Channels"
         }
     },
     musicTable: {

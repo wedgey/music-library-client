@@ -35,3 +35,21 @@ export function updateSongStatus(id, status) {
                     .catch(error => reject(error));
     });
 }
+
+// Update Song Title
+export function updateSongTitle(id, title) {
+    return new Promise((resolve, reject) => {
+        ajaxManager.post(`${SERVER_URL}/song/updatetitle`, { id, title })
+                    .then(response => resolve())
+                    .catch(error => reject(error));
+    });
+}
+
+// Update Song Artists
+export function updateSongArtistsByName(id, artistNames) {
+    return new Promise((resolve, reject) => {
+        ajaxManager.post(`${SERVER_URL}/song/updateartist`, { id, artistNames })
+                    .then(response => resolve(createSong(response.data)))
+                    .catch(error => reject(error));
+    });
+}

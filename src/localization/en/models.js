@@ -3,7 +3,14 @@ const modelsText = {
         title: "Title",
         artist: "Artist",
         duration: "Duration",
-        status: "Status"
+        status: "Status",
+        channelTitle: "Channel",
+        youtubeTitle: "Youtube Title"
+    },
+    channel: {
+        title: "Title",
+        customUrl: "Custom URL",
+        youtubeId: "Youtube Id"
     }
 }
 

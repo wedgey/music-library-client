@@ -94,6 +94,12 @@ class SideBar extends React.Component {
                                 <span>{this.stringObj.componentsText.sideBarText.linkText.manageSongs}</span>
                             </Link>
                         </Menu.Item>
+                        <Menu.Item key={this.stringObj.componentsText.sideBarText.linkText.manageChannels}>
+                            <Link to="/admin/managechannels">
+                                <Icon type="database" />
+                                <span>{this.stringObj.componentsText.sideBarText.linkText.manageChannels}</span>
+                            </Link>
+                        </Menu.Item>
                     </Menu.ItemGroup>
                     }
                     <Menu.ItemGroup key={this.stringObj.componentsText.sideBarText.headers.playlist} title={this.stringObj.componentsText.sideBarText.headers.playlist}>
