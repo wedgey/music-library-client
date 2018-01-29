@@ -12,7 +12,8 @@ class AdminManageSongs extends React.Component {
         this.state = {
             songs: [],
             totalCount: 0,
-            loading: false
+            loading: false,
+            searchTerm: ""
         }
 
         this.approveSongCallback = this.approveSongCallback.bind(this);
@@ -53,11 +54,13 @@ class AdminManageSongs extends React.Component {
     }
 
     handleTableChange(pagination, filters, sorter) {
+        let title = this.state.searchTerm || null;
         let { pageSize, current: currentPage } = pagination;
-        this.retrievePendingSongs({ page: currentPage - 1, pageSize });
+        this.retrievePendingSongs({ title, page: currentPage - 1, pageSize });
     }
 
     handleSearch(value) {
+        this.setState({ searchTerm: value });
         this.retrievePendingSongs({ title: value });
     }
 
