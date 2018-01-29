@@ -17,6 +17,8 @@ class AdminManageSongs extends React.Component {
 
         this.approveSongCallback = this.approveSongCallback.bind(this);
         this.rejectSongCallback = this.rejectSongCallback.bind(this);
+        this.titleChangeCallback = this.titleChangeCallback.bind(this);
+        this.artistChangeCallback = this.artistChangeCallback.bind(this);
         this.handleTableChange = this.handleTableChange.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
     }
@@ -32,6 +34,22 @@ class AdminManageSongs extends React.Component {
 
     rejectSongCallback(song) {
         this.setState({ songs: this.state.songs.filter(s => s.id !== song.id)});
+    }
+
+    titleChangeCallback(song, title) {
+        let songs = this.state.songs.map(s => {
+            if (s.id === song.id) s.title = title;
+            return s;
+        });
+        this.setState({ songs });
+    }
+
+    artistChangeCallback(song, artist, isRemoved = true) {
+        let songs = this.state.songs.map(s => {
+            if (s.id === song.id) s = song;
+            return s;
+        });
+        this.setState({ songs });
     }
 
     handleTableChange(pagination, filters, sorter) {
@@ -62,7 +80,7 @@ class AdminManageSongs extends React.Component {
                 </Row>
                 <Row>
                     <Col>
-                        <ManageSongsMusicTable dataSource={Object.values(this.state.songs)} loading={{spinning: this.state.loading, delay: 200}} totalCount={this.state.totalCount} onChange={this.handleTableChange} approveSongCallback={this.approveSongCallback} rejectSongCallback={this.rejectSongCallback} />
+                        <ManageSongsMusicTable dataSource={Object.values(this.state.songs)} loading={{spinning: this.state.loading, delay: 200}} totalCount={this.state.totalCount} onChange={this.handleTableChange} approveSongCallback={this.approveSongCallback} rejectSongCallback={this.rejectSongCallback} titleChangeCallback={this.titleChangeCallback} artistChangeCallback={this.artistChangeCallback} />
                     </Col>
                 </Row>
             </div>

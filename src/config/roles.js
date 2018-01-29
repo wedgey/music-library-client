@@ -1,6 +1,7 @@
 export const RoleTitles = {
     admin: "Admin",
-    member: "Member"
+    member: "Member",
+    system: "System"
 };
 
 export const RoleGroups = {

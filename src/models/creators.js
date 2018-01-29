@@ -17,7 +17,12 @@ export const createSong = (song = {}) => {
         artistNames: song.artist.map(artist => artist.name).join(', '),
         youtubeId: song.youtubeId || "",
         duration: song.metadata && song.metadata.duration,
-        status: song.status || SongStatus.pending
+        status: song.status || SongStatus.pending,
+        metaData: song.metadata && {
+            channelTitle: song.metadata.channelTitle,
+            channelId: song.metadata.channelId,
+            youtubeTitle: song.metadata.title
+        }
     }
 }
 
@@ -36,5 +41,16 @@ export const createArtist = (artist = {}) => {
         id: artist._id || artist.id,
         name: artist.name,
         type: artist.type
+    }
+}
+
+export const createChannel = (channel = {}) => {
+    return {
+        id: channel._id || channel.id,
+        owner: channel.owner,
+        youtubeId: channel.youtubeId,
+        title: channel.title,
+        description: channel.description,
+        customUrl: channel.customUrl        
     }
 }
