@@ -3,6 +3,7 @@ import { AutoComplete, Button, Card, Col, Form, Input, Row } from "antd";
 import { connect } from "react-redux";
 
 import TagInput from "../forms/tagInput";
+import ArtistComplete from "../artistComplete";
 
 import LocalizationManager from "../../localization";
 import { addSong } from "../../actions/libraryActions";
@@ -25,9 +26,7 @@ class AddSongForm extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleYoutubeId = this.handleYoutubeId.bind(this);
         this.loadYoutubeVideo =  this.loadYoutubeVideo.bind(this);
-        this.handleArtistsComplete = this.handleArtistsComplete.bind(this);
         this.handleArtistSelect = this.handleArtistSelect.bind(this);
-        this.onArtistInputChange = this.onArtistInputChange.bind(this);
         this.handleTagClose = this.handleTagClose.bind(this);
         this.validateArtist = this.validateArtist.bind(this);
     }
@@ -53,33 +52,11 @@ class AddSongForm extends React.Component {
         return target.type === 'checkbox' ? target.checked : target.value;
     }
 
-    handleArtistsComplete(name = "") {
-        getArtists({name}, (response) => {
-            let artistsAutoComplete = response.data.artists;
-            if (artistsAutoComplete) artistsAutoComplete = artistsAutoComplete.map(artist => artist.name);
-            this.setState({ artistsAutoComplete });
-        });
-    }
-
     handleArtistSelect(value, option) {
-        if (!this.state.artist.includes(value)) this.setState({artist: [...this.state.artist, value]}, () => this.props.form.validateFields(['artist'], { force: true }));
+        let artistName = value.text;
+        if (!this.state.artist.includes(artistName)) this.setState({artist: [...this.state.artist, artistName]}, () => this.props.form.validateFields(['artist'], { force: true }));
         this.artistSelectedEvent = true;
     }
-
-    onArtistInputChange(value, label) {
-        if (this.artistSelectedEvent) {
-            this.setState({ artistInputValue: "" });
-            this.artistSelectedEvent = false;
-        } else {
-            if (value.slice(-1) === ",") {
-                let newArtistName = value.substr(0, value.length - 1);
-                if (!this.state.artist.includes(newArtistName)) this.setState({artist: [...this.state.artist, newArtistName], artistInputValue: ""}, () => this.props.form.validateFields(['artist'], {force: true}));
-            } else {
-                this.setState({ artistInputValue: value });
-            }
-        }
-    }
-
     validateArtist(rule, value, callback) {
         if (this.state.artist.length > 0) callback();
         else callback(new Error(this.stringObj.formsText.addSongForm.artistRequireError));
@@ -118,9 +95,7 @@ class AddSongForm extends React.Component {
                             {getFieldDecorator('artist', {
                                 rules: [{ validator: this.validateArtist }],
                             })(
-                                <TagInput tags={this.state.artist} tagProps={{closable: true, onClose: this.handleTagClose}}>
-                                    <AutoComplete dataSource={this.state.artistsAutoComplete} onSearch={this.handleArtistsComplete} onSelect={this.handleArtistSelect} value={this.state.artistInputValue} onChange={this.onArtistInputChange} placeholder={this.stringObj.formsText.addSongForm.artistPlaceholder} />
-                                </TagInput>
+                                <ArtistComplete artist={this.state.artist} removeArtist={this.handleTagClose} addArtist={this.handleArtistSelect} />
                             )}
                         </Form.Item>
                         <Form.Item className="margin-bottom-sm indent-label" colon={false} label={this.stringObj.formsText.addSongForm.linkLabel}>

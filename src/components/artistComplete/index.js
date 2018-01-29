@@ -49,6 +49,7 @@ class ArtistComplete extends React.Component {
                 let newArtistName = value.substr(0, value.length - 1);
                 let newArtist = { text: newArtistName, value: null };
                 this.props.addArtist(newArtist);
+                this.setState({ artistInputValue: "" });
             } else {
                 this.setState({ artistInputValue: value });
             }

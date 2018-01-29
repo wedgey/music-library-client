@@ -60,7 +60,8 @@ class ManageSongsMusicTable extends React.Component {
             dataIndex: 'status', 
             render: (text, record, index) => <Tag color="orange">{record.status}</Tag>
         }, { 
-            title: `${this.stringObj.componentsText.musicTable.manageSongs.approve}?`,
+            title: <div className='text-right'>{`${this.stringObj.componentsText.musicTable.manageSongs.approve}?`}</div>,
+            className: 'text-right',
             dataIndex: 'status',
             key: 'approve-buttons',
             render: (text, record, index) => <React.Fragment><Button type="primary" data-origin="button" onClick={this.approveSong.bind(undefined, record)}>Approve</Button> <Button type="danger" data-origin="button" onClick={this.rejectSong.bind(undefined, record)}>Reject</Button></React.Fragment>
