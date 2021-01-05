@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "antd": "^3.0.0",
-    "axios": "^0.17.1",
+    "axios": "^0.21.1",
     "history": "^4.7.2",
     "jwt-decode": "^2.2.0",
     "react": "^16.2.0",
