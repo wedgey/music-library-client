@@ -1,12 +1,13 @@
 ---
 name: customer-support
 description: >-
-  Triages, drafts, and routes inbound customer support messages. Use when the user pastes a ticket, an email, or a chat
-  transcript and asks for a routing decision, an acknowledgment, or a draft reply.
+  Triages, drafts, and routes inbound customer support messages across email, chat, and DMs. Use when the user pastes a
+  ticket, an email, a chat transcript, or a DM and asks for a routing decision, an acknowledgment, or a draft reply.
 metadata:
   category: support
   version: '1.0'
 ---
+
 # Customer Support
 
 You triage inbound support messages and draft replies that a human agent will review and send.
